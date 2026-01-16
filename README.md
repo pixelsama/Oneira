@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# Oneiria
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Oneiria is a modern, local-first AI creative studio application built with Tauri v2. It provides a seamless interface for generating, managing, and organizing AI-generated artwork, focusing on privacy, performance, and user experience.
 
-Currently, two official plugins are available:
+![License](https://img.shields.io/github/license/pixelsama/Oneira)
+![Tauri](https://img.shields.io/badge/Tauri-v2-orange)
+![React](https://img.shields.io/badge/React-v19-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-v5-blue)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ key Features
 
-## React Compiler
+-   **🎨 Creative Studio**: A powerful interface for AI image generation. currently supports:
+    -   **Multi-Model Support**: Seamlessly switch between Volcengine Doubao (Seedream) and OpenAI (DALL-E).
+    -   **Custom Resolution**: Dynamic resolution options based on the selected provider (including 2K/4K support for Doubao).
+    -   **Prompt Management**: Optimized prompt input experience.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-   **🖼️ Assets Gallery**:
+    -   Local-first image storage and management.
+    -   Grid view for easy browsing of generated assets.
 
-## Expanding the ESLint configuration
+-   **📚 Resource Library**:
+    -   Organize and manage your creative resources and presets.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+-   **⚙️ Flexible Configuration**:
+    -   Secure API key management (stored locally).
+    -   Customizable generation settings.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+-   **Core**: [Tauri v2](https://v2.tauri.app/) (Rust + WebView)
+-   **Frontend**: React 19, TypeScript, Vite
+-   **Styling**: TailwindCSS 4
+-   **State Management**: Zustand
+-   **Routing**: React Router v7
+-   **Icons**: Lucide React
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 Getting Started
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+-   **Node.js** (v20 or later recommended)
+-   **Rust** (Latest stable version) -> [Install Rust](https://www.rust-lang.org/tools/install)
+-   **pnpm** (Recommended package manager)
+
+### Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone git@github.com:pixelsama/Oneira.git
+    cd Oneira
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    pnpm install
+    # or
+    npm install
+    ```
+
+3.  **Run the development environment**
+    ```bash
+    pnpm tauri dev
+    # or
+    npm run tauri dev
+    ```
+
+    The application window should launch shortly.
+
+## 📦 Building for Production
+
+To create a release build for your operating system:
+
+```bash
+pnpm tauri build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🤝 Contributing
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
