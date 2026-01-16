@@ -1,50 +1,48 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# 入梦 (DreamIn) Constitution
+
+<!--
+SYNC IMPACT REPORT
+==================
+Version Change: Initial -> 1.0.0
+Ratification Date: 2026-01-16
+
+Modified Principles:
+- Defined Project Identity
+- Defined Security & Privacy
+- Defined Technical Architecture
+- Defined Collaboration Standards
+
+Templates Checked:
+- .specify/templates/plan-template.md: ✅ Compatible
+- .specify/templates/spec-template.md: ✅ Compatible
+- .specify/templates/tasks-template.md: ✅ Compatible
+-->
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Project Identity & Philosophy
+“入梦 (DreamIn)” is a lightweight desktop local client. Its primary purpose is to serve as a secure connector to external AI services via user-provided API tokens. It DOES NOT perform local AI computation (inference) and MUST NOT bundle large model weights.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Security & Privacy (NON-NEGOTIABLE)
+Because the software handles sensitive user API tokens, strict adherence to these security rules is mandatory:
+*   **Zero Cloud Storage**: User API Tokens MUST NEVER be transmitted to developer servers, telemetry services, or any third-party storage.
+*   **Encrypted Storage**: API Tokens MUST be stored locally using secure system storage mechanisms (e.g., Tauri `stronghold` or System Keyring). Plaintext storage is prohibited.
+*   **Transport Security**: All communication with AI service providers MUST use encrypted HTTPS.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Technical Architecture
+*   **Stack**: The application MUST be built using Tauri + React/Vite.
+*   **Network Layer**: Network requests to AI services MUST be handled by the Rust backend (using libraries like `reqwest`) to prevent API keys from being exposed or manipulated in the browser console.
+*   **Lightweight**: The application distribution MUST remain small and efficient.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
-
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
-
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
-
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### IV. Collaboration & Code Standards
+*   **Accessibility**: Code structure MUST be modular and beginner-friendly.
+*   **Documentation**: AI-generated code MUST include **Chinese comments** specifically explaining how sensitive user information is handled safely.
+*   **Robustness**: The application MUST include comprehensive error handling for network issues (e.g., API timeouts, invalid tokens) and provide clear, user-friendly error messages in the UI.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+All code contributions must be reviewed against the Core Principles, especially the Security & Privacy mandates.
+*   **Security Review**: Any change touching token storage or network transmission requires explicit verification of zero-leakage.
+*   **Architecture Review**: Introduction of new heavy dependencies or local inference engines is prohibited without a Constitution Amendment.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-16 | **Last Amended**: 2026-01-16
