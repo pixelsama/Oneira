@@ -59,7 +59,7 @@ async fn generate_doubao(
     // Using explicit resolution if possible, otherwise default to user's choice or 2K.
     // For now passing explicit W*H if logic allows, but documentation example used "2K".
     // Let's try passing explicit resolution string "Width*Height" which is common.
-    let size_str = format!("{}*{}", payload.width, payload.height);
+    let size_str = format!("{}x{}", payload.width, payload.height);
 
     let body = json!({
         "model": model,
