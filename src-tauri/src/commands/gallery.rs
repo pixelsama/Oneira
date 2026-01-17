@@ -1,6 +1,6 @@
 use tauri::{AppHandle, Manager};
 use tauri_plugin_store::StoreExt;
-use tauri_plugin_shell::ShellExt;
+use tauri_plugin_opener::OpenerExt;
 use crate::models::GeneratedImage;
 use std::fs;
 use std::path::PathBuf;
@@ -54,6 +54,6 @@ pub async fn list_gallery_images(app: AppHandle) -> Result<Vec<GeneratedImage>, 
 
 #[tauri::command]
 pub async fn open_image_in_viewer(app: AppHandle, path: String) -> Result<(), String> {
-    app.shell().open(path, None).map_err(|e| e.to_string())?;
+    app.opener().open_path(&path, None::<&str>).map_err(|e| e.to_string())?;
     Ok(())
 }

@@ -1,7 +1,7 @@
 use tauri::{AppHandle, Manager};
 use tauri_plugin_store::StoreExt;
 use crate::models::GeneratePayload;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::fs;
 use std::io::Write;
 use reqwest::Client;
@@ -44,7 +44,7 @@ pub async fn generate_image(app: AppHandle, payload: GeneratePayload) -> Result<
 async fn generate_doubao(
     store: &tauri_plugin_store::Store<tauri::Wry>, 
     client: &Client, 
-    output_path: &PathBuf, 
+    output_path: &Path, 
     payload: GeneratePayload
 ) -> Result<Vec<String>, String> {
     let api_token = store.get("doubao_api_key")
@@ -119,7 +119,7 @@ async fn generate_doubao(
 async fn generate_openai(
     store: &tauri_plugin_store::Store<tauri::Wry>, 
     client: &Client, 
-    output_path: &PathBuf, 
+    output_path: &Path, 
     payload: GeneratePayload
 ) -> Result<Vec<String>, String> {
     let api_token = store.get("openai_api_key")

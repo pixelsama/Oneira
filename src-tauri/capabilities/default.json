@@ -12,7 +12,9 @@
     "shell:default",
     {
       "identifier": "fs:scope",
-      "allow": ["$DOCUMENT/DreamIn/**"]
+      "allow": [
+        "$DOCUMENT/DreamIn/**"
+      ]
     }
   ]
 }
