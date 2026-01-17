@@ -16,7 +16,7 @@ export const ResourceLibrary = () => {
 
   useEffect(() => {
     loadResources();
-  }, []);
+  }, [loadResources]);
 
   const handleSave = async (data: { name: string; description: string; prompt: string; imagePaths: string[] }) => {
     try {
@@ -30,7 +30,11 @@ export const ResourceLibrary = () => {
       setIsEditorOpen(false);
       setEditingResource(null);
     } catch (e) {
-      toast.error('Failed to save resource.');
+      // 在控制台打印完整的错误，方便开发时调试
+      console.error('Save resource error:', e);
+      // 给用户显示简明扼要的信息
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      toast.error(`Failed to save resource. (${errorMessage})`);
     }
   };
 
@@ -41,8 +45,8 @@ export const ResourceLibrary = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this resource?')) {
-        await deleteResource(id);
-        toast.success('Resource deleted.');
+      await deleteResource(id);
+      toast.success('Resource deleted.');
     }
   };
 
@@ -61,25 +65,25 @@ export const ResourceLibrary = () => {
     <div className="flex flex-col h-full p-8 gap-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-neutral-100">Resource Library</h1>
-        <button 
-            onClick={handleOpenNew}
-            className="flex items-center gap-2 bg-neutral-100 hover:bg-white text-black px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer"
+        <button
+          onClick={handleOpenNew}
+          className="flex items-center gap-2 bg-neutral-100 hover:bg-white text-black px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer"
         >
-            <Plus size={18} /> New Resource
+          <Plus size={18} /> New Resource
         </button>
       </div>
 
-      <ResourceList 
-        resources={resources} 
-        isLoading={isLoading} 
-        onEdit={handleEdit} 
+      <ResourceList
+        resources={resources}
+        isLoading={isLoading}
+        onEdit={handleEdit}
         onDelete={handleDelete}
         onLoadToStudio={handleLoadToStudio}
       />
-      
-      <ResourceEditor 
-        isOpen={isEditorOpen} 
-        onClose={() => setIsEditorOpen(false)} 
+
+      <ResourceEditor
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
         initialData={editingResource}
         onSave={handleSave}
       />

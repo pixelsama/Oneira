@@ -8,14 +8,14 @@ export const AssetsGallery = () => {
 
   useEffect(() => {
     loadImages();
-  }, []);
+  }, [loadImages]);
 
   return (
     <div className="flex flex-col h-full p-8 gap-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-neutral-100">Assets Gallery</h1>
-        <button 
-          onClick={() => loadImages()} 
+        <button
+          onClick={() => loadImages()}
           className="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors cursor-pointer"
           title="Refresh"
         >
@@ -23,10 +23,10 @@ export const AssetsGallery = () => {
         </button>
       </div>
 
-      <ImageGrid 
-        images={images} 
-        isLoading={isLoading} 
-        onOpen={openImage} 
+      <ImageGrid
+        images={images}
+        isLoading={isLoading}
+        onOpen={openImage}
       />
     </div>
   );
