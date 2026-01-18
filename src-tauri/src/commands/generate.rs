@@ -66,19 +66,38 @@ async fn generate_doubao(
 
     // Map size or use 2K if not strictly defined.
     // Using explicit resolution if possible, otherwise default to user's choice or 2K.
-    // For now passing explicit W*H if logic allows, but documentation example used "2K".
-    // Let's try passing explicit resolution string "Width*Height" which is common.
     let size_str = format!("{}x{}", payload.width, payload.height);
 
-    let body = json!({
+    let mut body = json!({
         "model": model,
         "prompt": payload.prompt,
-        "sequential_image_generation": "disabled",
+        "sequential_image_generation": if payload.count > 1 { "auto" } else { "disabled" },
         "response_format": "url",
-        "size": size_str, // Trying explicit size first
+        "size": size_str,
         "stream": false,
         "watermark": false
     });
+
+    // Handle reference images
+    if let Some(ref_images) = payload.reference_images {
+        if !ref_images.is_empty() {
+            let mut image_data_uris = Vec::new();
+            for path_str in ref_images {
+                let uri = image_to_base64_uri(&path_str)?;
+                image_data_uris.push(uri);
+            }
+
+            if image_data_uris.len() == 1 {
+                body.as_object_mut()
+                    .unwrap()
+                    .insert("image".to_string(), json!(image_data_uris[0]));
+            } else {
+                body.as_object_mut()
+                    .unwrap()
+                    .insert("image".to_string(), json!(image_data_uris));
+            }
+        }
+    }
 
     let res = client
         .post(url)
@@ -125,6 +144,44 @@ async fn generate_doubao(
     }
 
     Ok(saved_paths)
+}
+
+fn get_mime_type(path: &Path) -> Result<String, String> {
+    let ext = path
+        .extension()
+        .and_then(|e| e.to_str())
+        .map(|e| e.to_lowercase())
+        .ok_or("File has no extension")?;
+
+    match ext.as_str() {
+        "jpg" | "jpeg" => Ok("image/jpeg".to_string()),
+        "png" => Ok("image/png".to_string()),
+        "webp" => Ok("image/webp".to_string()),
+        "gif" => Ok("image/gif".to_string()),
+        _ => Err(format!("Unsupported file extension: {}", ext)),
+    }
+}
+
+fn image_to_base64_uri(path_str: &str) -> Result<String, String> {
+    let path = Path::new(path_str);
+
+    if !path.exists() {
+        return Err(format!("Image file not found: {}", path_str));
+    }
+
+    let metadata = fs::metadata(path).map_err(|e| e.to_string())?;
+    if metadata.len() > 10 * 1024 * 1024 {
+        return Err(format!(
+            "Image too large: {:.2}MB (max 10MB)",
+            metadata.len() as f64 / (1024.0 * 1024.0)
+        ));
+    }
+
+    let mime_type = get_mime_type(path)?;
+    let bytes = fs::read(path).map_err(|e| e.to_string())?;
+    let b64 = BASE64_STANDARD.encode(&bytes);
+
+    Ok(format!("data:{};base64,{}", mime_type, b64))
 }
 
 async fn generate_openai(
