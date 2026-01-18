@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { ReferenceImage } from '../../../types/referenceImage';
 import { useReferenceImageStore } from '../../../stores/referenceImageStore';
 import { Image as ImageIcon } from 'lucide-react';
@@ -19,7 +20,15 @@ export const MentionMenu = ({
   position,
 }: MentionMenuProps) => {
   const { images } = useReferenceImageStore();
+  // Use a key-based approach to reset selectedIndex when filterText changes
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [prevFilterText, setPrevFilterText] = useState(filterText);
+
+  // Reset selected index when filter changes (using state update pattern to avoid effect)
+  if (filterText !== prevFilterText) {
+    setPrevFilterText(filterText);
+    setSelectedIndex(0);
+  }
 
   const filteredImages = images.filter((img) =>
     img.displayName.toLowerCase().includes(filterText.toLowerCase())
@@ -52,9 +61,9 @@ export const MentionMenu = ({
 
   if (!isOpen) return null;
 
-  return (
+  const menuContent = (
     <div
-      className="absolute z-50 w-64 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl overflow-hidden"
+      className="fixed z-[9999] w-64 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl overflow-hidden"
       style={{ top: position.top, left: position.left }}
     >
       {filteredImages.length === 0 ? (
@@ -91,4 +100,8 @@ export const MentionMenu = ({
       )}
     </div>
   );
+
+  // Use Portal to render menu at document.body level
+  // This avoids being clipped by parent elements with overflow: hidden
+  return createPortal(menuContent, document.body);
 };

@@ -116,14 +116,13 @@ export const PromptInput = () => {
         return;
       }
 
-      // Calculate position
+      // Calculate position using viewport coordinates (for fixed positioning)
       try {
         const rect = range.getBoundingClientRect();
-        // We want the position of the @ character roughly, or the cursor.
-        // rect is the cursor position.
+        // Use viewport coordinates directly since MentionMenu uses fixed positioning
         setMentionPosition({
-          top: rect.bottom + window.scrollY + 5,
-          left: rect.left + window.scrollX,
+          top: rect.bottom + 5,
+          left: rect.left,
         });
         setMentionFilter(query);
         setMentionMenuOpen(true);
