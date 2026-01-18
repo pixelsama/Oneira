@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "dreamin-mvp",
+  "productName": "Oneiria",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.pixelsama.oneiria",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
@@ -23,11 +23,7 @@
       "csp": null,
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "$DOCUMENT/**",
-          "$APPDATA/**",
-          "$HOME/**"
-        ]
+        "scope": ["$DOCUMENT/**", "$APPDATA/**", "$HOME/**"]
       }
     }
   },
