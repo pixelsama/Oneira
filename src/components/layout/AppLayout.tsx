@@ -1,7 +1,16 @@
+import { useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { Palette, Library, Image, Settings } from 'lucide-react';
+import { useSettingsStore } from '../../stores/settingsStore';
 
 export const AppLayout = () => {
+  const { loadSettings } = useSettingsStore();
+
+  // Load settings on app startup
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
+
   const navItems = [
     { to: '/', icon: Palette, label: 'Studio' },
     { to: '/library', icon: Library, label: 'Library' },
@@ -20,7 +29,9 @@ export const AppLayout = () => {
             title={item.label}
             className={({ isActive }) =>
               `p-3 rounded-xl transition-colors ${
-                isActive ? 'bg-purple-600 text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                isActive
+                  ? 'bg-purple-600 text-white'
+                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
               }`
             }
           >
