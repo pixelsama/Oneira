@@ -15,12 +15,25 @@ interface ResourceState {
   resources: Resource[];
   isLoading: boolean;
   loadResources: () => Promise<void>;
-  createResource: (payload: { name: string; description?: string; prompt: string; imagePaths: string[] }) => Promise<void>;
-  updateResource: (payload: { id: string; name?: string; description?: string; prompt?: string; images?: string[] }) => Promise<void>;
+  createResource: (payload: {
+    name: string;
+    description?: string;
+    prompt: string;
+    imagePaths: string[];
+  }) => Promise<void>;
+  updateResource: (payload: {
+    id: string;
+    name?: string;
+    description?: string;
+    prompt?: string;
+    images?: string[];
+  }) => Promise<void>;
   deleteResource: (id: string) => Promise<void>;
+  getResourceById: (id: string) => Resource | undefined;
+  getResourceByName: (name: string) => Resource | undefined;
 }
 
-export const useResourceStore = create<ResourceState>((set) => ({
+export const useResourceStore = create<ResourceState>((set, get) => ({
   resources: [],
   isLoading: false,
   loadResources: async () => {
@@ -48,5 +61,11 @@ export const useResourceStore = create<ResourceState>((set) => ({
     set((state) => ({
       resources: state.resources.filter((r) => r.id !== id),
     }));
+  },
+  getResourceById: (id: string) => {
+    return get().resources.find((r) => r.id === id);
+  },
+  getResourceByName: (name: string) => {
+    return get().resources.find((r) => r.name === name);
   },
 }));

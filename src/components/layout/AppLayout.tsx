@@ -2,15 +2,18 @@ import { useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { Palette, Library, Image, Settings } from 'lucide-react';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { useResourceStore } from '../../stores/resourceStore';
 import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 
 export const AppLayout = () => {
   const { loadSettings, settings } = useSettingsStore();
+  const { loadResources } = useResourceStore();
 
-  // Load settings on app startup
+  // Load settings and resources on app startup
   useEffect(() => {
     loadSettings();
-  }, [loadSettings]);
+    loadResources();
+  }, [loadSettings, loadResources]);
 
   // Handle system theme changes
   useEffect(() => {

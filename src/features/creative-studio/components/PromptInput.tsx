@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useGenerationStore } from '../../../stores/generationStore';
 import { useReferenceImageStore } from '../../../stores/referenceImageStore';
+import { useResourceStore, type Resource } from '../../../stores/resourceStore';
 import { toast } from 'sonner';
-import { MentionMenu } from './MentionMenu';
+import { MentionMenu, type MentionItem } from './MentionMenu';
 import type { ReferenceImage } from '../../../types/referenceImage';
 import type { PromptContent } from '../../../types/prompt';
 
 export const PromptInput = () => {
   const { setPromptContent, generate, isGenerating, promptContent } = useGenerationStore();
   const { getImageById, images } = useReferenceImageStore();
+  const { getResourceById } = useResourceStore();
 
   const editorRef = useRef<HTMLDivElement>(null);
   const isLocalUpdate = useRef(false);
@@ -39,9 +41,24 @@ export const PromptInput = () => {
         // Re-create SVG icon
         span.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span>${img ? img.displayName : 'Unknown Image'}</span>`;
         root.appendChild(span);
+      } else if (item.type === 'resource-reference') {
+        const resource = getResourceById(item.value);
+        const span = document.createElement('span');
+        span.contentEditable = 'false';
+        span.className =
+          'inline-flex items-center gap-1 bg-blue-900/50 text-blue-200 px-1.5 py-0.5 rounded text-xs mx-1 align-middle border border-blue-700 select-none';
+        span.dataset.resourceId = item.value;
+        // Re-create SVG icon (Package)
+        const resName = resource ? resource.name : 'Unknown Resource';
+        if (!resource) {
+          span.classList.add('border-yellow-600', 'text-yellow-200');
+          span.classList.remove('border-blue-700', 'text-blue-200');
+        }
+        span.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.5 9.4-9-5.19"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><span>${resName}</span>`;
+        root.appendChild(span);
       }
     });
-  }, [promptContent, getImageById, images]);
+  }, [promptContent, getImageById, getResourceById, images]);
 
   const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
   const [mentionFilter, setMentionFilter] = useState('');
@@ -73,6 +90,8 @@ export const PromptInput = () => {
         const el = node as HTMLElement;
         if (el.dataset.imageId) {
           content.push({ type: 'image-reference', value: el.dataset.imageId });
+        } else if (el.dataset.resourceId) {
+          content.push({ type: 'resource-reference', value: el.dataset.resourceId });
         } else if (el.tagName === 'BR') {
           content.push({ type: 'text', value: '\n' });
         } else {
@@ -180,6 +199,44 @@ export const PromptInput = () => {
     parseContent();
   };
 
+  const insertResourceTag = (resource: Resource) => {
+    const selection = window.getSelection();
+    if (!selection) return;
+    if (!mentionStartRef.current) return;
+
+    const range = mentionStartRef.current;
+    range.deleteContents();
+
+    const tag = document.createElement('span');
+    tag.contentEditable = 'false';
+    tag.className =
+      'inline-flex items-center gap-1 bg-blue-900/50 text-blue-200 px-1.5 py-0.5 rounded text-xs mx-1 align-middle border border-blue-700 select-none';
+    tag.dataset.resourceId = resource.id;
+
+    tag.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.5 9.4-9-5.19"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><span>${resource.name}</span>`;
+
+    range.insertNode(tag);
+
+    const space = document.createTextNode('\u00A0');
+    range.collapse(false);
+    range.insertNode(space);
+
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    setMentionMenuOpen(false);
+    parseContent();
+  };
+
+  const handleSelect = (item: MentionItem) => {
+    if (item.type === 'image') {
+      insertImageTag(item.originalObject as ReferenceImage);
+    } else if (item.type === 'resource') {
+      insertResourceTag(item.originalObject as Resource);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       if (mentionMenuOpen) {
@@ -229,7 +286,7 @@ export const PromptInput = () => {
 
         {!promptContent.length && (
           <div className="absolute top-4 left-4 text-[var(--text-secondary)] pointer-events-none select-none opacity-70">
-            Describe your dream... (Type @ to add image)
+            Describe your dream... (Type @ to add image or resource)
           </div>
         )}
 
@@ -246,7 +303,7 @@ export const PromptInput = () => {
           isOpen={mentionMenuOpen}
           filterText={mentionFilter}
           position={mentionPosition}
-          onSelect={insertImageTag}
+          onSelect={handleSelect}
           onClose={() => setMentionMenuOpen(false)}
         />
       </div>

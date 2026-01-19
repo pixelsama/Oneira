@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
-import type { Resource } from './resourceStore';
+import { useResourceStore, type Resource } from './resourceStore';
 import type { PromptContent } from '../types/prompt';
 import { useReferenceImageStore } from './referenceImageStore';
 
@@ -51,20 +51,41 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
     return promptContent
       .map((item) => {
         if (item.type === 'text') return item.value;
-        const img = useReferenceImageStore.getState().getImageById(item.value);
-        return img ? `图片文件[${img.displayName}]` : '';
+        if (item.type === 'image-reference') {
+          const img = useReferenceImageStore.getState().getImageById(item.value);
+          return img ? `图片文件[${img.displayName}]` : '';
+        }
+        if (item.type === 'resource-reference') {
+          const res = useResourceStore.getState().getResourceById(item.value);
+          if (!res) {
+            console.warn(`Warning: Resource ${item.value} not found, skipping`);
+            return '';
+          }
+          return res.promptTemplate;
+        }
+        return '';
       })
       .join('');
   },
   getReferencedImagePaths: () => {
     const { promptContent } = get();
-    return promptContent
-      .filter((item) => item.type === 'image-reference')
-      .map((item) => {
+    const paths = new Set<string>();
+
+    promptContent.forEach((item) => {
+      if (item.type === 'image-reference') {
         const img = useReferenceImageStore.getState().getImageById(item.value);
-        return img ? img.originalPath : null;
-      })
-      .filter((path): path is string => path !== null);
+        if (img) paths.add(img.originalPath);
+      } else if (item.type === 'resource-reference') {
+        const res = useResourceStore.getState().getResourceById(item.value);
+        if (res) {
+          res.images.forEach((path) => paths.add(path));
+        } else {
+          console.warn(`Warning: Resource ${item.value} not found, skipping`);
+        }
+      }
+    });
+
+    return Array.from(paths);
   },
   generate: async () => {
     const { negativePrompt, width, height, count, getSerializedPrompt, getReferencedImagePaths } =
