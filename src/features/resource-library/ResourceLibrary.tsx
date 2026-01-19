@@ -27,7 +27,13 @@ export const ResourceLibrary = () => {
   }) => {
     try {
       if (editingResource) {
-        await updateResource({ id: editingResource.id, ...data });
+        await updateResource({
+          id: editingResource.id,
+          name: data.name,
+          description: data.description,
+          prompt: data.prompt,
+          images: data.imagePaths,
+        });
         toast.success('Resource updated.');
       } else {
         await createResource(data);

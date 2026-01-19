@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
+import { exists } from '@tauri-apps/plugin-fs';
 import { useResourceStore, type Resource } from './resourceStore';
 import type { PromptContent } from '../types/prompt';
 import { useReferenceImageStore } from './referenceImageStore';
@@ -97,6 +98,22 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
     set({ isGenerating: true });
     try {
       const referenceImages = getReferencedImagePaths();
+
+      // Task 3.2: Validate image paths
+      const validImages: string[] = [];
+      for (const path of referenceImages) {
+        try {
+          const fileExists = await exists(path);
+          if (fileExists) {
+            validImages.push(path);
+          } else {
+            console.warn(`Warning: Image not found, skipping: ${path}`);
+          }
+        } catch (e) {
+          console.warn(`Warning: Error checking image path, skipping: ${path}`, e);
+        }
+      }
+
       const images = await invoke<string[]>('generate_image', {
         payload: {
           prompt,
@@ -104,7 +121,7 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
           width,
           height,
           count,
-          referenceImages: referenceImages.length > 0 ? referenceImages : null,
+          referenceImages: validImages.length > 0 ? validImages : null,
         },
       });
       set({ generatedImages: images, isGenerating: false });
