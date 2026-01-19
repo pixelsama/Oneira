@@ -203,7 +203,7 @@ export const PromptInput = () => {
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <label className="text-sm font-medium text-neutral-400">Prompt</label>
+      <label className="text-sm font-medium text-[var(--text-secondary)]">Prompt</label>
       <div className="relative group">
         <div
           ref={editorRef}
@@ -218,9 +218,9 @@ export const PromptInput = () => {
             }, 200);
           }}
           className={`
-            w-full min-h-[128px] bg-neutral-900 border border-neutral-800 rounded-lg p-4 
-            text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-600 
-            resize-none whitespace-pre-wrap overflow-y-auto max-h-[300px]
+            w-full min-h-[128px] bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg p-4 
+            text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] 
+            resize-none whitespace-pre-wrap overflow-y-auto max-h-[300px] transition-colors duration-200
             ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}
           `}
           role="textbox"
@@ -228,7 +228,7 @@ export const PromptInput = () => {
         />
 
         {!promptContent.length && (
-          <div className="absolute top-4 left-4 text-neutral-600 pointer-events-none select-none">
+          <div className="absolute top-4 left-4 text-[var(--text-secondary)] pointer-events-none select-none opacity-70">
             Describe your dream... (Type @ to add image)
           </div>
         )}
@@ -236,7 +236,7 @@ export const PromptInput = () => {
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="absolute bottom-4 right-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-4 py-2 rounded-md font-medium transition-colors cursor-pointer z-10"
+          className="absolute bottom-4 right-4 bg-[var(--accent-color)] hover:brightness-110 disabled:opacity-50 text-white px-4 py-2 rounded-md font-medium transition-colors cursor-pointer z-10"
         >
           {isGenerating ? 'Dreaming...' : 'Generate'}
         </button>

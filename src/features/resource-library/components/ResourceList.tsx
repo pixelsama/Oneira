@@ -11,12 +11,16 @@ interface Props {
 
 export const ResourceList = ({ resources, isLoading, onEdit, onDelete, onLoadToStudio }: Props) => {
   if (isLoading) {
-    return <div className="text-neutral-500 p-8 text-center animate-pulse">Loading library...</div>;
+    return (
+      <div className="text-[var(--text-secondary)] p-8 text-center animate-pulse">
+        Loading library...
+      </div>
+    );
   }
 
   if (resources.length === 0) {
     return (
-      <div className="text-neutral-500 p-12 text-center border border-dashed border-neutral-800 rounded-xl bg-neutral-900/20">
+      <div className="text-[var(--text-secondary)] p-12 text-center border border-dashed border-[var(--border-color)] rounded-xl bg-[var(--bg-secondary)]/50">
         <p>No resources found.</p>
         <p className="text-sm mt-2 opacity-60">Save your favorite prompts and styles here.</p>
       </div>
@@ -26,10 +30,10 @@ export const ResourceList = ({ resources, isLoading, onEdit, onDelete, onLoadToS
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-8">
       {resources.map((r) => (
-        <ResourceCard 
-          key={r.id} 
-          resource={r} 
-          onEdit={onEdit} 
+        <ResourceCard
+          key={r.id}
+          resource={r}
+          onEdit={onEdit}
           onDelete={onDelete}
           onLoadToStudio={onLoadToStudio}
         />

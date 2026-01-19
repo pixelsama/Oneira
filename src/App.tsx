@@ -7,11 +7,14 @@ import { ResourceLibrary } from './features/resource-library/ResourceLibrary';
 
 import { AssetsGallery } from './features/assets-gallery/AssetsGallery';
 import { Settings } from './features/settings/Settings';
+import { useSettingsStore } from './stores/settingsStore';
 
 function App() {
+  const { settings } = useSettingsStore();
+
   return (
     <BrowserRouter>
-      <Toaster position="bottom-center" theme="dark" />
+      <Toaster position="bottom-center" theme={settings.theme} />
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<CreativeStudio />} />

@@ -9,6 +9,7 @@ pub struct AppSettings {
     pub provider: String,
     pub openai_api_key: Option<String>,
     pub doubao_api_key: Option<String>,
+    pub theme: Option<String>,
 }
 
 #[tauri::command]
@@ -25,6 +26,10 @@ pub async fn save_settings(app: AppHandle, settings: AppSettings) -> Result<(), 
 
     if let Some(key) = settings.doubao_api_key {
         store.set("doubao_api_key", json!(key));
+    }
+
+    if let Some(theme) = settings.theme {
+        store.set("theme", json!(theme));
     }
 
     store.save().map_err(|e| e.to_string())?;
@@ -53,9 +58,14 @@ pub async fn get_settings(app: AppHandle) -> Result<AppSettings, String> {
         .get("doubao_api_key")
         .and_then(|v| v.as_str().map(|s| s.to_string()));
 
+    let theme = store
+        .get("theme")
+        .and_then(|v| v.as_str().map(|s| s.to_string()));
+
     Ok(AppSettings {
         provider,
         openai_api_key,
         doubao_api_key,
+        theme,
     })
 }

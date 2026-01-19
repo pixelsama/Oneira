@@ -8,7 +8,8 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 export const ResourceLibrary = () => {
-  const { resources, isLoading, loadResources, createResource, updateResource, deleteResource } = useResourceStore();
+  const { resources, isLoading, loadResources, createResource, updateResource, deleteResource } =
+    useResourceStore();
   const { loadResource } = useGenerationStore();
   const navigate = useNavigate();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -18,7 +19,12 @@ export const ResourceLibrary = () => {
     loadResources();
   }, [loadResources]);
 
-  const handleSave = async (data: { name: string; description: string; prompt: string; imagePaths: string[] }) => {
+  const handleSave = async (data: {
+    name: string;
+    description: string;
+    prompt: string;
+    imagePaths: string[];
+  }) => {
     try {
       if (editingResource) {
         await updateResource({ id: editingResource.id, ...data });
@@ -64,10 +70,10 @@ export const ResourceLibrary = () => {
   return (
     <div className="flex flex-col h-full p-8 gap-6 overflow-y-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-neutral-100">Resource Library</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Resource Library</h1>
         <button
           onClick={handleOpenNew}
-          className="flex items-center gap-2 bg-neutral-100 hover:bg-white text-black px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer"
+          className="flex items-center gap-2 bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-primary)] px-4 py-2 rounded-lg font-medium transition-all cursor-pointer"
         >
           <Plus size={18} /> New Resource
         </button>

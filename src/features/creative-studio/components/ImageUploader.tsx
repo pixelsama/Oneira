@@ -153,19 +153,21 @@ export const ImageUploader = () => {
         onDrop={handleDrop}
         className={`
           border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center 
-          transition-colors cursor-pointer bg-neutral-900/50 min-h-[120px]
-          ${isDragging ? 'border-purple-500 bg-purple-900/10' : 'border-neutral-800 hover:border-neutral-600'}
+          transition-colors cursor-pointer bg-[var(--bg-secondary)] min-h-[120px] duration-200
+          ${isDragging ? 'border-[var(--accent-color)] bg-[var(--accent-color)]/10' : 'border-[var(--border-color)] hover:border-[var(--text-secondary)]'}
         `}
       >
         {isProcessing ? (
-          <Loader2 size={24} className="text-purple-500 animate-spin mb-2" />
+          <Loader2 size={24} className="text-[var(--accent-color)] animate-spin mb-2" />
         ) : (
-          <Upload size={24} className="text-neutral-500 mb-2" />
+          <Upload size={24} className="text-[var(--text-secondary)] mb-2" />
         )}
-        <span className="text-sm text-neutral-400 text-center">
+        <span className="text-sm text-[var(--text-secondary)] text-center">
           {isProcessing ? 'Processing images...' : 'Upload Reference Images'}
         </span>
-        <span className="text-xs text-neutral-600 mt-1">Click or Drag & Drop</span>
+        <span className="text-xs text-[var(--text-secondary)] mt-1 opacity-70">
+          Click or Drag & Drop
+        </span>
       </div>
 
       {images.length > 0 && (

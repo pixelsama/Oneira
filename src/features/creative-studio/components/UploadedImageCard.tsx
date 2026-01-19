@@ -38,8 +38,8 @@ export const UploadedImageCard = ({ image }: UploadedImageCardProps) => {
   };
 
   return (
-    <div className="relative group bg-neutral-800 rounded-lg overflow-hidden border border-neutral-700 hover:border-neutral-600 transition-colors">
-      <div className="aspect-square w-full relative bg-neutral-900">
+    <div className="relative group bg-[var(--bg-primary)] rounded-lg overflow-hidden border border-[var(--border-color)] hover:border-[var(--text-secondary)] transition-colors duration-200">
+      <div className="aspect-square w-full relative bg-[var(--bg-secondary)]">
         {image.thumbnailDataUrl ? (
           <img
             src={image.thumbnailDataUrl}
@@ -47,7 +47,7 @@ export const UploadedImageCard = ({ image }: UploadedImageCardProps) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-neutral-700 text-xs">
+          <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)] text-xs">
             No Preview
           </div>
         )}
@@ -71,7 +71,7 @@ export const UploadedImageCard = ({ image }: UploadedImageCardProps) => {
               onChange={(e) => setEditedName(e.target.value)}
               onBlur={handleSave}
               onKeyDown={handleKeyDown}
-              className="w-full bg-neutral-900 border border-neutral-600 rounded px-1 py-0.5 text-xs text-neutral-200 focus:outline-none focus:border-purple-500"
+              className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-1 py-0.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-color)] transition-colors duration-200"
             />
             <button
               onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
@@ -84,14 +84,14 @@ export const UploadedImageCard = ({ image }: UploadedImageCardProps) => {
         ) : (
           <div className="flex items-center justify-between group/name">
             <span
-              className="text-xs text-neutral-300 truncate font-medium"
+              className="text-xs text-[var(--text-primary)] truncate font-medium"
               title={image.displayName}
             >
               {image.displayName}
             </span>
             <button
               onClick={() => setIsEditing(true)}
-              className="text-neutral-500 hover:text-white opacity-0 group-hover/name:opacity-100 transition-opacity"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] opacity-0 group-hover/name:opacity-100 transition-opacity"
             >
               <Edit2 size={10} />
             </button>
