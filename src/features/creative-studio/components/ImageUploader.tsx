@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useReferenceImageStore } from '../../../stores/referenceImageStore';
 import { UploadedImageCard } from './UploadedImageCard';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const MAX_THUMBNAIL_SIZE = 200;
 const ACCEPTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
@@ -47,6 +48,7 @@ const generateThumbnail = async (path: string, mimeType: string): Promise<string
 };
 
 export const ImageUploader = () => {
+  const { t } = useTranslation();
   const { images, addImage } = useReferenceImageStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -163,10 +165,10 @@ export const ImageUploader = () => {
           <Upload size={24} className="text-[var(--text-secondary)] mb-2" />
         )}
         <span className="text-sm text-[var(--text-secondary)] text-center">
-          {isProcessing ? 'Processing images...' : 'Upload Reference Images'}
+          {isProcessing ? t('studio.upload.processing') : t('studio.upload.title')}
         </span>
         <span className="text-xs text-[var(--text-secondary)] mt-1 opacity-70">
-          Click or Drag & Drop
+          {t('studio.upload.subtitle')}
         </span>
       </div>
 

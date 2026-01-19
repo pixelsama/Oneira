@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Sun, Moon, Monitor, Palette } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useSettingsStore, type ThemeMode } from '../../stores/settingsStore';
 
 // Inline cn if it doesn't exist, but usually with shadcn-like setup it does.
@@ -12,14 +13,15 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const THEME_OPTIONS: { value: ThemeMode; label: string; icon: React.ElementType }[] = [
-  { value: 'light', label: '浅色', icon: Sun },
-  { value: 'dark', label: '深色', icon: Moon },
-  { value: 'system', label: '跟随系统', icon: Monitor },
-];
-
 export const ThemeSwitcher = () => {
+  const { t } = useTranslation();
   const { settings, setTheme } = useSettingsStore();
+
+  const themeOptions: { value: ThemeMode; label: string; icon: React.ElementType }[] = [
+    { value: 'light', label: t('settings.theme.light'), icon: Sun },
+    { value: 'dark', label: t('settings.theme.dark'), icon: Moon },
+    { value: 'system', label: t('settings.theme.system'), icon: Monitor },
+  ];
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -70,7 +72,7 @@ export const ThemeSwitcher = () => {
             {/* Sliding Indicator (could be enhanced, but simple active state is safer for MVP) */}
             {/* Actually, let's try a simple background approach for the active item instead of a separate slider for now to ensure robustness */}
 
-            {THEME_OPTIONS.map((option) => (
+            {themeOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleThemeChange(option.value)}

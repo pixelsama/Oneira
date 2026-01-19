@@ -3,7 +3,10 @@ import { useGenerationStore } from '../../../stores/generationStore';
 import { useSettingsStore } from '../../../stores/settingsStore';
 import { getCapabilities } from '../../../config/modelCapabilities';
 
+import { useTranslation } from 'react-i18next';
+
 export const GenerationSettings = () => {
+  const { t } = useTranslation();
   const { width, height, count, setSize, setCount, isGenerating } = useGenerationStore();
   const { settings } = useSettingsStore();
 
@@ -20,11 +23,11 @@ export const GenerationSettings = () => {
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)] transition-colors duration-200">
-      <h3 className="font-semibold text-[var(--text-primary)]">Settings</h3>
+      <h3 className="font-semibold text-[var(--text-primary)]">{t('studio.settings.title')}</h3>
 
       <div className="flex flex-col gap-2">
         <label className="text-xs text-[var(--text-secondary)] uppercase">
-          Dimensions ({capabilities.name})
+          {t('studio.settings.dimensions')}
         </label>
         <div className="flex gap-2">
           <select
@@ -46,7 +49,9 @@ export const GenerationSettings = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-xs text-[var(--text-secondary)] uppercase">Batch Size</label>
+        <label className="text-xs text-[var(--text-secondary)] uppercase">
+          {t('studio.settings.batchSize')}
+        </label>
         <input
           type="number"
           min={1}

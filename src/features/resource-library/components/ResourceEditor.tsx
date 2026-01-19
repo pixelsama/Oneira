@@ -17,7 +17,10 @@ interface Props {
   }) => Promise<void>;
 }
 
+import { useTranslation } from 'react-i18next';
+
 export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) => {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [prompt, setPrompt] = useState('');
@@ -94,7 +97,7 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
 
   const previewResource: Resource = {
     id: initialData?.id || 'preview',
-    name: name || 'Untitled Resource',
+    name: name || t('library.editor.titleNew'),
     description: description,
     promptTemplate: prompt || 'No prompt template defined',
     images: imagePaths,
@@ -109,7 +112,7 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[90vh] transition-colors duration-200 overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-[var(--border-color)]">
           <h2 className="font-semibold text-lg text-[var(--text-primary)]">
-            {initialData ? 'Edit Resource' : 'New Resource'}
+            {initialData ? t('library.editor.titleEdit') : t('library.editor.titleNew')}
           </h2>
           <button
             onClick={onClose}
@@ -127,43 +130,43 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                  Name
+                  {t('library.editor.name')}
                 </label>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[var(--accent-color)]/50 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] placeholder:opacity-50 transition-all duration-200"
-                  placeholder="e.g. Cinematic Portrait Style"
+                  placeholder={t('library.editor.namePlaceholder')}
                   required
                 />
               </div>
 
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                  Description
+                  {t('library.editor.description')}
                 </label>
                 <input
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[var(--accent-color)]/50 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] placeholder:opacity-50 transition-all duration-200"
-                  placeholder="Optional notes about this resource..."
+                  placeholder={t('library.editor.descriptionPlaceholder')}
                 />
               </div>
 
               <div className="flex flex-col gap-1">
                 <div className="flex justify-between items-center">
                   <label className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                    Prompt Template
+                    {t('library.editor.promptTemplate')}
                   </label>
                   <span className="text-[10px] text-[var(--text-secondary)] opacity-60 flex items-center gap-1">
-                    <Info size={10} /> Use @ to mention resources
+                    <Info size={10} /> {t('library.editor.promptHint')}
                   </span>
                 </div>
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[var(--accent-color)]/50 outline-none text-[var(--text-primary)] h-32 resize-none font-mono text-sm placeholder:text-[var(--text-secondary)] placeholder:opacity-50 transition-all duration-200"
-                  placeholder="Masterpiece, highly detailed, {prompt}..."
+                  placeholder={t('library.editor.promptPlaceholder')}
                   required
                 />
               </div>
@@ -171,7 +174,7 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
                   <label className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-                    Reference Images
+                    {t('library.editor.referenceImages')}
                     <span
                       className={`ml-2 normal-case font-normal ${isOverLimit ? 'text-yellow-500' : 'text-[var(--text-secondary)]'}`}
                     >
@@ -183,14 +186,14 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
                     onClick={handleAddImages}
                     className="flex items-center gap-1 text-xs text-[var(--accent-color)] hover:brightness-110 font-medium transition-all"
                   >
-                    <Plus size={14} /> Add Images
+                    <Plus size={14} /> {t('library.editor.addImages')}
                   </button>
                 </div>
 
                 {isOverLimit && (
                   <div className="flex items-center gap-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-[10px] text-yellow-600 dark:text-yellow-400">
                     <AlertTriangle size={14} />
-                    Recommended: max 5 images per resource for optimal performance
+                    {t('library.editor.imageLimit')}
                   </div>
                 )}
 
@@ -228,7 +231,7 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
                   {imagePaths.length === 0 && (
                     <div className="col-span-5 flex flex-col items-center justify-center text-[var(--text-secondary)] opacity-40 py-4">
                       <Plus size={24} />
-                      <p className="text-xs mt-1">Add reference images</p>
+                      <p className="text-xs mt-1">{t('library.editor.addReferenceImages')}</p>
                     </div>
                   )}
                 </div>
@@ -241,30 +244,29 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
                 disabled={isSaving}
                 className="bg-[var(--accent-color)] hover:brightness-110 text-white px-6 py-2.5 rounded-lg font-semibold flex items-center gap-2 disabled:opacity-50 cursor-pointer transition-all shadow-lg shadow-[var(--accent-color)]/20"
               >
-                <Save size={18} /> {isSaving ? 'Saving...' : 'Save Resource'}
+                <Save size={18} />{' '}
+                {isSaving ? t('library.editor.saving') : t('library.editor.save')}
               </button>
             </div>
           </form>
 
           <div className="w-80 bg-[var(--bg-primary)]/30 p-6 flex flex-col gap-4 overflow-y-auto">
             <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
-              Live Preview
+              {t('library.editor.livePreview')}
             </h3>
             <div className="scale-90 origin-top">
               <ResourceCard resource={previewResource} onEdit={() => {}} onDelete={() => {}} />
             </div>
             <div className="mt-4 p-4 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)]">
               <p className="text-[10px] text-[var(--text-secondary)] uppercase tracking-widest font-bold mb-2 flex items-center gap-1">
-                <Info size={10} /> Usage Hint
+                <Info size={10} /> {t('library.editor.usageHint')}
               </p>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Refer to this resource in your prompt using{' '}
-                <span className="text-[var(--accent-color)] font-mono font-bold">
-                  @{name || 'name'}
-                </span>
-                . Templates can include{' '}
-                <span className="font-mono text-[var(--text-primary)]">{'{prompt}'}</span> which
-                will be replaced by your studio input.
+                {t('library.editor.usageText1')}{' '}
+                <span className="text-[var(--accent-color)] font-mono font-bold">@{name}</span>.{' '}
+                {t('library.editor.usageText2')}{' '}
+                <span className="font-mono text-[var(--text-primary)]">{'{prompt}'}</span>{' '}
+                {t('library.editor.usageText3')}
               </p>
             </div>
           </div>

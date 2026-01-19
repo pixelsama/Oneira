@@ -3,6 +3,7 @@ import type { Resource } from '../../../stores/resourceStore';
 import { Trash2, Edit, Play, Copy, Check, X } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   resource: Resource;
@@ -45,13 +46,14 @@ const ResourceImage = ({
 };
 
 export const ResourceCard = ({ resource, onEdit, onDelete, onLoadToStudio }: Props) => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(resource.promptTemplate);
     setCopied(true);
-    toast.success('Prompt copied to clipboard');
+    toast.success(t('library.card.promptCopied'));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -111,7 +113,7 @@ export const ResourceCard = ({ resource, onEdit, onDelete, onLoadToStudio }: Pro
           <button
             onClick={handleCopy}
             className="p-1.5 hover:bg-white/20 text-white rounded-md transition-colors"
-            title="Copy Prompt"
+            title={t('library.card.copyPrompt')}
           >
             {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
           </button>
@@ -121,7 +123,7 @@ export const ResourceCard = ({ resource, onEdit, onDelete, onLoadToStudio }: Pro
               onEdit(resource);
             }}
             className="p-1.5 hover:bg-white/20 text-white rounded-md transition-colors"
-            title="Edit"
+            title={t('library.card.edit')}
           >
             <Edit size={14} />
           </button>
@@ -131,7 +133,7 @@ export const ResourceCard = ({ resource, onEdit, onDelete, onLoadToStudio }: Pro
               onDelete(resource.id);
             }}
             className="p-1.5 hover:bg-red-500/80 text-white rounded-md transition-colors"
-            title="Delete"
+            title={t('library.card.delete')}
           >
             <Trash2 size={14} />
           </button>
@@ -160,7 +162,7 @@ export const ResourceCard = ({ resource, onEdit, onDelete, onLoadToStudio }: Pro
             onClick={() => onLoadToStudio(resource)}
             className="mt-1 w-full flex items-center justify-center gap-2 py-1.5 bg-[var(--bg-primary)] hover:bg-[var(--accent-color)] text-[var(--text-secondary)] hover:text-white text-xs font-medium rounded transition-all border border-[var(--border-color)] hover:border-[var(--accent-color)]/50 cursor-pointer"
           >
-            <Play size={12} fill="currentColor" /> Load to Studio
+            <Play size={12} fill="currentColor" /> {t('library.card.loadToStudio')}
           </button>
         )}
       </div>

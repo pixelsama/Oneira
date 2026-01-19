@@ -3,8 +3,10 @@ import { ImageUploader } from './components/ImageUploader';
 import { GenerationSettings } from './components/GenerationSettings';
 import { useGenerationStore } from '../../stores/generationStore';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import { useTranslation } from 'react-i18next';
 
 export const CreativeStudio = () => {
+  const { t } = useTranslation();
   const { generatedImages, isGenerating } = useGenerationStore();
 
   // Display latest image
@@ -18,7 +20,7 @@ export const CreativeStudio = () => {
           {isGenerating && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
               <div className="animate-pulse text-[var(--accent-color)] font-medium">
-                Synthesizing...
+                {t('studio.synthesizing')}
               </div>
             </div>
           )}
@@ -29,9 +31,7 @@ export const CreativeStudio = () => {
               className="max-h-full max-w-full object-contain shadow-2xl"
             />
           ) : (
-            <div className="text-[var(--text-secondary)] text-lg">
-              Your imagination is the limit.
-            </div>
+            <div className="text-[var(--text-secondary)] text-lg">{t('studio.placeholder')}</div>
           )}
         </div>
         <PromptInput />

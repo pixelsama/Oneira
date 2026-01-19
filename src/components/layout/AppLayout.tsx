@@ -4,8 +4,11 @@ import { Palette, Library, Image, Settings } from 'lucide-react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useResourceStore } from '../../stores/resourceStore';
 import { ThemeSwitcher } from '../ui/ThemeSwitcher';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export const AppLayout = () => {
+  const { t } = useTranslation();
   const { loadSettings, settings } = useSettingsStore();
   const { loadResources } = useResourceStore();
 
@@ -37,10 +40,10 @@ export const AppLayout = () => {
   }, [settings.theme]);
 
   const navItems = [
-    { to: '/', icon: Palette, label: 'Studio' },
-    { to: '/library', icon: Library, label: 'Library' },
-    { to: '/gallery', icon: Image, label: 'Gallery' },
-    { to: '/settings', icon: Settings, label: 'Settings' },
+    { to: '/', icon: Palette, label: t('nav.studio') },
+    { to: '/library', icon: Library, label: t('nav.library') },
+    { to: '/gallery', icon: Image, label: t('nav.gallery') },
+    { to: '/settings', icon: Settings, label: t('nav.settings') },
   ];
 
   return (
@@ -64,7 +67,8 @@ export const AppLayout = () => {
           </NavLink>
         ))}
 
-        <div className="mt-auto mb-2">
+        <div className="mt-auto mb-2 flex flex-col items-center gap-2">
+          <LanguageSwitcher />
           <ThemeSwitcher />
         </div>
       </aside>

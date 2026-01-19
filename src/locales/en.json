@@ -1,0 +1,125 @@
+{
+  "app": {
+    "name": "Oneiria"
+  },
+  "nav": {
+    "studio": "Studio",
+    "library": "Library",
+    "gallery": "Gallery",
+    "settings": "Settings"
+  },
+  "settings": {
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "english": "English",
+      "chinese": "Chinese"
+    },
+    "page": {
+      "title": "Settings",
+      "loading": "Loading settings...",
+      "provider": {
+        "title": "AI Provider",
+        "label": "Select Provider",
+        "openai": "OpenAI (DALL-E 3)",
+        "doubao": "Volcengine Doubao (Seedream)"
+      },
+      "config": {
+        "title": "Configuration",
+        "openai": {
+          "label": "OpenAI API Key",
+          "placeholder": "sk-...",
+          "hint": "Your API key is stored locally on your device."
+        },
+        "doubao": {
+          "label": "Doubao API Key",
+          "placeholder": "Your Volcengine API Key",
+          "hint": "Requires an API Key from Volcengine Console."
+        }
+      },
+      "save": "Save Settings",
+      "saveSuccess": "Settings saved successfully"
+    }
+  },
+  "studio": {
+    "placeholder": "Your imagination is the limit.",
+    "synthesizing": "Synthesizing...",
+    "prompt": {
+      "label": "Prompt",
+      "placeholder": "Describe your dream... (Type @ to add image or resource)",
+      "generate": "Generate",
+      "dreaming": "Dreaming..."
+    },
+    "settings": {
+      "title": "Settings",
+      "dimensions": "Dimensions",
+      "batchSize": "Batch Size"
+    },
+    "upload": {
+      "title": "Upload Reference Images",
+      "subtitle": "Click or Drag & Drop",
+      "processing": "Processing images..."
+    },
+    "toast": {
+      "success": "Dream captured successfully.",
+      "fail": "Generation failed: "
+    }
+  },
+  "gallery": {
+    "title": "Assets Gallery",
+    "refresh": "Refresh",
+    "loading": "Scanning assets...",
+    "empty": "No images generated yet. Go dream something!"
+  },
+  "library": {
+    "title": "Resource Library",
+    "newResource": "New Resource",
+    "loading": "Loading library...",
+    "empty": {
+      "title": "No resources found.",
+      "subtitle": "Save your favorite prompts and styles here."
+    },
+    "card": {
+      "copyPrompt": "Copy Prompt",
+      "edit": "Edit",
+      "delete": "Delete",
+      "loadToStudio": "Load to Studio",
+      "promptCopied": "Prompt copied to clipboard"
+    },
+    "editor": {
+      "titleNew": "New Resource",
+      "titleEdit": "Edit Resource",
+      "name": "Name",
+      "namePlaceholder": "e.g. Cinematic Portrait Style",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional notes about this resource...",
+      "promptTemplate": "Prompt Template",
+      "promptHint": "Use @ to mention resources",
+      "promptPlaceholder": "Masterpiece, highly detailed, {prompt}...",
+      "referenceImages": "Reference Images",
+      "addImages": "Add Images",
+      "addReferenceImages": "Add reference images",
+      "imageLimit": "Recommended: max 5 images per resource for optimal performance",
+      "livePreview": "Live Preview",
+      "usageHint": "Usage Hint",
+      "usageText1": "Refer to this resource in your prompt using",
+      "usageText2": "Templates can include",
+      "usageText3": "which will be replaced by your studio input.",
+      "save": "Save Resource",
+      "saving": "Saving..."
+    },
+    "toast": {
+      "created": "Resource created.",
+      "updated": "Resource updated.",
+      "deleted": "Resource deleted.",
+      "loaded": "Resource loaded to Studio",
+      "saveFailed": "Failed to save resource."
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this resource?"
+    }
+  }
+}

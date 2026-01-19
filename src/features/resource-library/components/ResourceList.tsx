@@ -1,5 +1,6 @@
 import type { Resource } from '../../../stores/resourceStore';
 import { ResourceCard } from './ResourceCard';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   resources: Resource[];
@@ -10,10 +11,11 @@ interface Props {
 }
 
 export const ResourceList = ({ resources, isLoading, onEdit, onDelete, onLoadToStudio }: Props) => {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <div className="text-[var(--text-secondary)] p-8 text-center animate-pulse">
-        Loading library...
+        {t('library.loading')}
       </div>
     );
   }
@@ -21,8 +23,8 @@ export const ResourceList = ({ resources, isLoading, onEdit, onDelete, onLoadToS
   if (resources.length === 0) {
     return (
       <div className="text-[var(--text-secondary)] p-12 text-center border border-dashed border-[var(--border-color)] rounded-xl bg-[var(--bg-secondary)]/50">
-        <p>No resources found.</p>
-        <p className="text-sm mt-2 opacity-60">Save your favorite prompts and styles here.</p>
+        <p>{t('library.empty.title')}</p>
+        <p className="text-sm mt-2 opacity-60">{t('library.empty.subtitle')}</p>
       </div>
     );
   }

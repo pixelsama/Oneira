@@ -6,12 +6,14 @@ import { ResourceEditor } from './components/ResourceEditor';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const ResourceLibrary = () => {
   const { resources, isLoading, loadResources, createResource, updateResource, deleteResource } =
     useResourceStore();
   const { loadResource } = useGenerationStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
 
@@ -34,10 +36,10 @@ export const ResourceLibrary = () => {
           prompt: data.prompt,
           images: data.imagePaths,
         });
-        toast.success('Resource updated.');
+        toast.success(t('library.toast.updated'));
       } else {
         await createResource(data);
-        toast.success('Resource created.');
+        toast.success(t('library.toast.created'));
       }
       setIsEditorOpen(false);
       setEditingResource(null);
@@ -46,7 +48,7 @@ export const ResourceLibrary = () => {
       console.error('Save resource error:', e);
       // 给用户显示简明扼要的信息
       const errorMessage = e instanceof Error ? e.message : 'Unknown error';
-      toast.error(`Failed to save resource. (${errorMessage})`);
+      toast.error(`${t('library.toast.saveFailed')} (${errorMessage})`);
     }
   };
 
@@ -56,9 +58,9 @@ export const ResourceLibrary = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this resource?')) {
+    if (confirm(t('library.confirm.delete'))) {
       await deleteResource(id);
-      toast.success('Resource deleted.');
+      toast.success(t('library.toast.deleted'));
     }
   };
 
@@ -69,19 +71,19 @@ export const ResourceLibrary = () => {
 
   const handleLoadToStudio = (r: Resource) => {
     loadResource(r);
-    toast.success('Resource loaded to Studio');
+    toast.success(t('library.toast.loaded'));
     navigate('/');
   };
 
   return (
     <div className="flex flex-col h-full p-8 gap-6 overflow-y-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Resource Library</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t('library.title')}</h1>
         <button
           onClick={handleOpenNew}
           className="flex items-center gap-2 bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-primary)] px-4 py-2 rounded-lg font-medium transition-all cursor-pointer"
         >
-          <Plus size={18} /> New Resource
+          <Plus size={18} /> {t('library.newResource')}
         </button>
       </div>
 

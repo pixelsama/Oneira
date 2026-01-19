@@ -4,10 +4,12 @@ import { useReferenceImageStore } from '../../../stores/referenceImageStore';
 import { useResourceStore, type Resource } from '../../../stores/resourceStore';
 import { toast } from 'sonner';
 import { MentionMenu, type MentionItem } from './MentionMenu';
+import { useTranslation } from 'react-i18next';
 import type { ReferenceImage } from '../../../types/referenceImage';
 import type { PromptContent } from '../../../types/prompt';
 
 export const PromptInput = () => {
+  const { t } = useTranslation();
   const { setPromptContent, generate, isGenerating, promptContent } = useGenerationStore();
   const { getImageById, images } = useReferenceImageStore();
   const { getResourceById } = useResourceStore();
@@ -70,9 +72,9 @@ export const PromptInput = () => {
   const handleGenerate = async () => {
     try {
       await generate();
-      toast.success('Dream captured successfully.');
+      toast.success(t('studio.toast.success'));
     } catch (e) {
-      toast.error(`Generation failed: ${e}`);
+      toast.error(`${t('studio.toast.fail')}${e}`);
     }
   };
 
@@ -260,7 +262,9 @@ export const PromptInput = () => {
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <label className="text-sm font-medium text-[var(--text-secondary)]">Prompt</label>
+      <label className="text-sm font-medium text-[var(--text-secondary)]">
+        {t('studio.prompt.label')}
+      </label>
       <div className="relative group">
         <div
           ref={editorRef}
@@ -286,7 +290,7 @@ export const PromptInput = () => {
 
         {!promptContent.length && (
           <div className="absolute top-4 left-4 text-[var(--text-secondary)] pointer-events-none select-none opacity-70">
-            Describe your dream... (Type @ to add image or resource)
+            {t('studio.prompt.placeholder')}
           </div>
         )}
 
@@ -295,7 +299,7 @@ export const PromptInput = () => {
           disabled={isGenerating}
           className="absolute bottom-4 right-4 bg-[var(--accent-color)] hover:brightness-110 disabled:opacity-50 text-white px-4 py-2 rounded-md font-medium transition-colors cursor-pointer z-10"
         >
-          {isGenerating ? 'Dreaming...' : 'Generate'}
+          {isGenerating ? t('studio.prompt.dreaming') : t('studio.prompt.generate')}
         </button>
 
         <MentionMenu
