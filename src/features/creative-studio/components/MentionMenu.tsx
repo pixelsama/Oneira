@@ -63,11 +63,11 @@ export const MentionMenu = ({
 
   const menuContent = (
     <div
-      className="fixed z-[9999] w-64 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl overflow-hidden"
+      className="fixed z-[9999] w-64 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-xl overflow-hidden transition-colors duration-200"
       style={{ top: position.top, left: position.left }}
     >
       {filteredImages.length === 0 ? (
-        <div className="p-3 text-sm text-neutral-500 text-center">
+        <div className="p-3 text-sm text-[var(--text-secondary)] text-center">
           {images.length === 0 ? 'No uploaded images' : 'No matches found'}
         </div>
       ) : (
@@ -78,22 +78,22 @@ export const MentionMenu = ({
               onClick={() => onSelect(img)}
               className={`flex items-center gap-2 p-2 cursor-pointer text-sm transition-colors ${
                 index === selectedIndex
-                  ? 'bg-purple-600/20 text-purple-200'
-                  : 'text-neutral-300 hover:bg-neutral-700'
+                  ? 'bg-[var(--accent-color)]/20 text-[var(--accent-color)]'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]'
               }`}
             >
               {img.thumbnailDataUrl ? (
                 <img
                   src={img.thumbnailDataUrl}
                   alt=""
-                  className="w-6 h-6 rounded object-cover border border-neutral-600"
+                  className="w-6 h-6 rounded object-cover border border-[var(--border-color)]"
                 />
               ) : (
-                <div className="w-6 h-6 rounded bg-neutral-700 flex items-center justify-center">
-                  <ImageIcon size={14} className="text-neutral-500" />
+                <div className="w-6 h-6 rounded bg-[var(--bg-primary)] flex items-center justify-center">
+                  <ImageIcon size={14} className="text-[var(--text-secondary)]" />
                 </div>
               )}
-              <span className="truncate">{img.displayName}</span>
+              <span className="truncate text-[var(--text-primary)]">{img.displayName}</span>
             </li>
           ))}
         </ul>
