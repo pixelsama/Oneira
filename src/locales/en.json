@@ -109,6 +109,7 @@
       "promptHint": "Use @ to reference images or resources",
       "promptPlaceholder": "Masterpiece, highly detailed, {prompt}...",
       "duplicateNameWarning": "Duplicate display names found. Consider using unique names for better model clarity.",
+      "unusedImagesWarning": "All uploaded images must be referenced in the prompt template using @.",
       "referenceImages": "Reference Images",
       "addImages": "Add Images",
       "addReferenceImages": "Add reference images",

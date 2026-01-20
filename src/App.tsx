@@ -14,7 +14,15 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Toaster position="bottom-center" theme={settings.theme} />
+      <Toaster
+        position="bottom-center"
+        theme={settings.theme}
+        toastOptions={{
+          style: { zIndex: 9999 },
+          className: 'z-[9999]',
+        }}
+        style={{ zIndex: 9999 }}
+      />
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<CreativeStudio />} />

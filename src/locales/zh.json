@@ -109,6 +109,7 @@
       "promptHint": "使用 @ 引用图片或资源",
       "promptPlaceholder": "杰作, 高细节, {prompt}...",
       "duplicateNameWarning": "发现重复的显示名称。建议使用唯一的名称以获得更好的模型清晰度。",
+      "unusedImagesWarning": "所有上传的图片必须在提示词模板中使用 @ 进行引用。",
       "referenceImages": "参考图片",
       "addImages": "添加图片",
       "addReferenceImages": "添加参考图片",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { Resource } from '../../../stores/resourceStore';
 import { X, Save, Info } from 'lucide-react';
 import { ResourceCard } from './ResourceCard';
@@ -31,6 +31,7 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
   const [referenceImages, setReferenceImages] = useState<ReferenceImage[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isProcessingImages, setIsProcessingImages] = useState(false);
+  const validationInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const loadImagesAndPrompt = async () => {
@@ -157,6 +158,19 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
     e.preventDefault();
     if (!name || promptContent.length === 0) return;
 
+    // Validate that all images are referenced in the prompt
+    const referencedImageIds = new Set(
+      promptContent.filter((item) => item.type === 'image-reference').map((item) => item.value)
+    );
+
+    const unusedImages = referenceImages.filter((img) => !referencedImageIds.has(img.id));
+
+    if (unusedImages.length > 0 && validationInputRef.current) {
+      validationInputRef.current.setCustomValidity(t('library.editor.unusedImagesWarning'));
+      validationInputRef.current.reportValidity();
+      return;
+    }
+
     setIsSaving(true);
     try {
       const imagePaths = referenceImages.map((img) => img.originalPath);
@@ -235,21 +249,31 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
                     <Info size={10} /> {t('library.editor.promptHint')}
                   </span>
                 </div>
-                <MentionEditor
-                  content={promptContent}
-                  onChange={setPromptContent}
-                  mentionItems={referenceImages.map((img) => ({
-                    id: img.id,
-                    type: 'image',
-                    displayName: img.displayName,
-                    thumbnail: img.thumbnailDataUrl,
-                    originalObject: img,
-                  }))}
-                  placeholder={t('library.editor.promptPlaceholder')}
-                  disabled={isSaving}
-                  getImageById={(id) => referenceImages.find((img) => img.id === id)}
-                  className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 focus-within:ring-2 focus-within:ring-[var(--accent-color)]/50 outline-none text-[var(--text-primary)] min-h-[128px] max-h-[256px] overflow-y-auto whitespace-pre-wrap font-mono text-sm placeholder:text-[var(--text-secondary)] placeholder:opacity-50 transition-all duration-200"
-                />
+                <div className="relative">
+                  <input
+                    ref={validationInputRef}
+                    className="absolute top-0 left-0 w-full h-full opacity-0 pointer-events-none"
+                    required={false}
+                    onInput={(e) => {
+                      e.currentTarget.setCustomValidity('');
+                    }}
+                  />
+                  <MentionEditor
+                    content={promptContent}
+                    onChange={setPromptContent}
+                    mentionItems={referenceImages.map((img) => ({
+                      id: img.id,
+                      type: 'image',
+                      displayName: img.displayName,
+                      thumbnail: img.thumbnailDataUrl,
+                      originalObject: img,
+                    }))}
+                    placeholder={t('library.editor.promptPlaceholder')}
+                    disabled={isSaving}
+                    getImageById={(id) => referenceImages.find((img) => img.id === id)}
+                    className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 focus-within:ring-2 focus-within:ring-[var(--accent-color)]/50 outline-none text-[var(--text-primary)] min-h-[128px] max-h-[256px] overflow-y-auto whitespace-pre-wrap font-mono text-sm placeholder:text-[var(--text-secondary)] placeholder:opacity-50 transition-all duration-200"
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">
