@@ -444,6 +444,10 @@ Only add complexity with:
 - Concrete scale requirements (>1000 users, >100MB data)
 - Multiple proven use cases requiring abstraction
 
+### Package Management
+
+- **ALWAYS use pnpm**: This project strictly uses `pnpm`. Never use `npm` or `yarn` for installing or running scripts.
+
 ### Clear References
 
 - Use `file.ts:42` format for code locations

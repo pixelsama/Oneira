@@ -26,4 +26,8 @@ Rust 1.75+ (Backend), TypeScript 5.0+ (Frontend): Follow standard conventions
 - 001-oneiria-mvp: Added Rust 1.75+ (Backend), TypeScript 5.0+ (Frontend)
 
 <!-- MANUAL ADDITIONS START -->
+
+## Package ManagementRules
+
+- ALWAYS use `pnpm` for all node package interactions. Do not use `npm` or `yarn`.
 <!-- MANUAL ADDITIONS END -->
