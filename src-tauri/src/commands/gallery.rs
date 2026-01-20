@@ -12,7 +12,7 @@ pub async fn list_gallery_images(app: AppHandle) -> Result<Vec<GeneratedImage>, 
     let output_dir_str = store
         .get("output_dir")
         .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .unwrap_or("DreamIn/Outputs".to_string());
+        .unwrap_or("Oneiria/Outputs".to_string());
 
     let output_path = if output_dir_str.starts_with('/') {
         PathBuf::from(output_dir_str)

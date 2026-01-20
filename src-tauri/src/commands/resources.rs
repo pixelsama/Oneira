@@ -15,7 +15,7 @@ pub async fn create_resource(
     let timestamp = Utc::now().timestamp_millis();
 
     let doc_dir = app.path().document_dir().map_err(|e| e.to_string())?;
-    let resource_base_dir = doc_dir.join("DreamIn/Resources");
+    let resource_base_dir = doc_dir.join("Oneiria/Resources");
     let resource_dir = resource_base_dir.join(&id);
 
     if !resource_dir.exists() {
@@ -115,9 +115,9 @@ pub async fn delete_resource(app: AppHandle, id: String) -> Result<(), String> {
 
     // Should also delete files?
     // "Delete Resource ... exclusive files".
-    // We should delete the folder `DreamIn/Resources/{id}`.
+    // We should delete the folder `Oneiria/Resources/{id}`.
     let doc_dir = app.path().document_dir().map_err(|e| e.to_string())?;
-    let resource_dir = doc_dir.join("DreamIn/Resources").join(&id);
+    let resource_dir = doc_dir.join("Oneiria/Resources").join(&id);
     if resource_dir.exists() {
         let _ = fs::remove_dir_all(resource_dir); // ignore error
     }

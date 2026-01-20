@@ -4,7 +4,7 @@ Auto-generated from all feature plans. Last updated: 2026-01-16
 
 ## Active Technologies
 
-- Rust 1.75+ (Backend), TypeScript 5.0+ (Frontend) (001-dreamin-mvp)
+- Rust 1.75+ (Backend), TypeScript 5.0+ (Frontend) (001-oneiria-mvp)
 
 ## Project Structure
 
@@ -23,7 +23,7 @@ Rust 1.75+ (Backend), TypeScript 5.0+ (Frontend): Follow standard conventions
 
 ## Recent Changes
 
-- 001-dreamin-mvp: Added Rust 1.75+ (Backend), TypeScript 5.0+ (Frontend)
+- 001-oneiria-mvp: Added Rust 1.75+ (Backend), TypeScript 5.0+ (Frontend)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

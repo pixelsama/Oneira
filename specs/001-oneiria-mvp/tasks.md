@@ -1,11 +1,10 @@
 ---
-
-description: "Task list for DreamIn MVP"
+description: 'Task list for Oneiria MVP'
 ---
 
-# Tasks: DreamIn MVP
+# Tasks: Oneiria MVP
 
-**Input**: Design documents from `/specs/001-dreamin-mvp/`
+**Input**: Design documents from `/specs/001-oneiria-mvp/`
 **Prerequisites**: plan.md, spec.md, data-model.md, contracts/tauri-commands.md
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing.
@@ -88,7 +87,7 @@ description: "Task list for DreamIn MVP"
 - [x] T026 [US3] Implement "Load to Studio" button logic in `ResourceCard` (navigates to Studio + presets state) in `src/features/resource-library/components/ResourceCard.tsx`
 - [x] T027 [US3] Verify Studio correctly initializes with injected prompt and reference images (Img2Img)
 
-**Checkpoint**: User Stories 1, 2, 3 functional. Full "DreamIn" workflow active.
+**Checkpoint**: User Stories 1, 2, 3 functional. Full "Oneiria" workflow active.
 
 ---
 
@@ -112,10 +111,10 @@ description: "Task list for DreamIn MVP"
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [x] T033 [P] Apply "DreamIn" styling/theme (Tailwind) to all components globally
+- [x] T033 [P] Apply "Oneiria" styling/theme (Tailwind) to all components globally
 - [x] T034 Verify Chinese comments in all Rust/Security code (Constitution requirement)
 - [x] T035 Clean up any temporary files or debug logs
-- [x] T036 Run manual verification pass using `specs/001-dreamin-mvp/quickstart.md`
+- [x] T036 Run manual verification pass using `specs/001-oneiria-mvp/quickstart.md`
 
 ---
 

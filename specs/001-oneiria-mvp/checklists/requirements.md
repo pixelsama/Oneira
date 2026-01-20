@@ -1,8 +1,8 @@
-# Specification Quality Checklist: DreamIn MVP
+# Specification Quality Checklist: Oneiria MVP
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-01-16
-**Feature**: [specs/001-dreamin-mvp/spec.md](../spec.md)
+**Feature**: [specs/001-oneiria-mvp/spec.md](../spec.md)
 
 ## Content Quality
 
@@ -31,5 +31,5 @@
 
 ## Notes
 
-- Spec fully aligned with user input "DreamIn" core feature set.
+- Spec fully aligned with user input "Oneiria" core feature set.
 - Technical constraints (Tauri, SQLite) abstracted to functional requirements (Local Persistence) as per spec best practices, but noted for Planning phase.

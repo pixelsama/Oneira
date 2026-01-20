@@ -1,8 +1,9 @@
 # Quickstart & Verification Guide
 
-**Feature**: DreamIn MVP
+**Feature**: Oneiria MVP
 
 ## Prerequisites
+
 1. **Rust**: Installed (v1.75+).
 2. **Node.js**: Installed (v18+).
 3. **Pnpm**: Installed (`npm i -g pnpm`).
@@ -11,12 +12,14 @@
 ## Setup
 
 1. **Install Frontend Dependencies**:
+
    ```bash
    pnpm install
    ```
 
 2. **Initialize Tauri**:
-   *(If not already initialized)*
+   _(If not already initialized)_
+
    ```bash
    pnpm tauri init
    ```
@@ -29,21 +32,24 @@
 ## Verification Scenarios
 
 ### 1. Configure API
+
 1. Open Settings (gear icon).
 2. Enter a valid API Token (e.g., OpenAI Key or mock).
 3. Save.
 4. **Verify**: Check console logs (if debug) or try generating. Token should persist after restart.
 
 ### 2. Generate Image (Text-to-Image)
+
 1. Go to "Creative Studio".
 2. Enter prompt: "A cyberpunk cat".
 3. Click "Generate".
 4. **Verify**:
    - Loading spinner appears.
    - Image appears in the view area.
-   - File is created in `~/Documents/DreamIn/Outputs/`.
+   - File is created in `~/Documents/Oneiria/Outputs/`.
 
 ### 3. Create & Use Resource
+
 1. **Create**:
    - Go to "Resource Library".
    - Click "New Resource".
@@ -59,6 +65,7 @@
    - **Verify**: API receives both prompt and image (Img2Img).
 
 ### 4. View Gallery
+
 1. Go to "Assets Gallery".
 2. **Verify**: You see the images generated in steps 2 and 3.
 3. Click an image.

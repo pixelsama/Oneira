@@ -5,6 +5,7 @@ This defines the interface for `tauri::command` functions.
 ## 1. Generation Module (`commands::generate`)
 
 ### `generate_image`
+
 Initiates the AI generation process.
 
 - **Input** (`GeneratePayload`):
@@ -25,6 +26,7 @@ Initiates the AI generation process.
 ## 2. Resource Library Module (`commands::resources`)
 
 ### `create_resource`
+
 Saves a new resource metadata and copies referenced images to the resource storage folder.
 
 - **Input**:
@@ -39,6 +41,7 @@ Saves a new resource metadata and copies referenced images to the resource stora
 - **Output**: `Result<Resource, String>` (The created resource object)
 
 ### `update_resource`
+
 Updates an existing resource.
 
 - **Input**:
@@ -53,12 +56,14 @@ Updates an existing resource.
 - **Output**: `Result<Resource, String>`
 
 ### `delete_resource`
+
 Removes a resource and its exclusive files.
 
 - **Input**: `id: String`
 - **Output**: `Result<(), String>`
 
 ### `list_resources`
+
 Retrieves all resources.
 
 - **Input**: `()`
@@ -67,12 +72,14 @@ Retrieves all resources.
 ## 3. Gallery Module (`commands::gallery`)
 
 ### `list_gallery_images`
+
 Scans the output directory for images.
 
 - **Input**: `()`
 - **Output**: `Result<Vec<GeneratedImage>, String>`
 
 ### `open_image_in_viewer`
+
 Opens a file in the OS default viewer.
 
 - **Input**: `path: String`
@@ -81,12 +88,14 @@ Opens a file in the OS default viewer.
 ## 4. Settings Module (`commands::settings`)
 
 ### `set_api_token`
+
 Securely saves the API token.
 
 - **Input**: `token: String`
 - **Output**: `Result<(), String>` (Stored in Keychain/Stronghold)
 
 ### `get_api_token`
+
 Retrieves the token (only for backend use ideally, but may be needed for validation).
 
 - **Input**: `()`

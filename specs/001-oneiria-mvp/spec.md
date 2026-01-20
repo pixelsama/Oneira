@@ -1,9 +1,9 @@
-# Feature Specification: DreamIn MVP (Core Features)
+# Feature Specification: Oneiria MVP (Core Features)
 
-**Feature Branch**: `001-dreamin-mvp`
+**Feature Branch**: `001-oneiria-mvp`
 **Created**: 2026-01-16
 **Status**: Draft
-**Input**: User description: "入梦 (DreamIn) - 本地轻量化 AI 绘图客户端... 核心功能包括“创作工坊”、“资产管理”和“资源库”三大模块..."
+**Input**: User description: "入梦 (Oneiria) - 本地轻量化 AI 绘图客户端... 核心功能包括“创作工坊”、“资产管理”和“资源库”三大模块..."
 
 ## User Scenarios & Testing
 
@@ -80,6 +80,7 @@ Users can browse their history of generated images and open them in their operat
 ### Functional Requirements
 
 #### Creative Studio
+
 - **FR-001**: System MUST provide a text input area for generation prompts.
 - **FR-002**: System MUST allow uploading/selecting a reference image for Image-to-Image generation.
 - **FR-003**: System MUST provide configuration for API parameters (Resolution, Batch Size).
@@ -87,16 +88,19 @@ Users can browse their history of generated images and open them in their operat
 - **FR-005**: System MUST handle network errors and API errors (e.g., Invalid Token) with user-friendly messages.
 
 #### Resource Library
+
 - **FR-006**: System MUST allow users to define a "Resource" consisting of 1+ images and a text prompt.
 - **FR-007**: System MUST provide CRUD (Create, Read, Update, Delete) operations for Resources.
 - **FR-008**: System MUST persist Resource data locally.
 - **FR-009**: System MUST allow "injecting" a Resource into the Creative Studio, populating the reference image and prompt inputs.
 
 #### Assets Gallery
+
 - **FR-010**: System MUST display a chronological grid of generated images from the local storage.
 - **FR-011**: System MUST trigger the operating system's default file handler to open an image when clicked.
 
 #### Security & Architecture (from Constitution)
+
 - **FR-012**: System MUST store API Tokens using secure system storage (e.g., Keychain/Stronghold), NEVER in plaintext.
 - **FR-013**: System MUST NOT send API Tokens to any server other than the AI Provider.
 - **FR-014**: System MUST use HTTPS for all API communication.
@@ -111,18 +115,18 @@ Users can browse their history of generated images and open them in their operat
 ### Key Entities
 
 - **Resource**: A user-defined template containing:
-    - `id`: Unique identifier
-    - `name`: Display name
-    - `images`: List of file paths to reference images
-    - `prompt_template`: The text description associated with the assets
+  - `id`: Unique identifier
+  - `name`: Display name
+  - `images`: List of file paths to reference images
+  - `prompt_template`: The text description associated with the assets
 - **GeneratedImage**: An asset produced by the system:
-    - `path`: Local file path
-    - `timestamp`: Creation time
-    - `metadata`: Generation params (prompt, seed, model) - *recommended for future proofing*
+  - `path`: Local file path
+  - `timestamp`: Creation time
+  - `metadata`: Generation params (prompt, seed, model) - _recommended for future proofing_
 - **Settings**:
-    - `api_endpoint`: URL of the AI service
-    - `api_token`: Securely stored credential
-    - `output_path`: Directory for auto-saves
+  - `api_endpoint`: URL of the AI service
+  - `api_token`: Securely stored credential
+  - `output_path`: Directory for auto-saves
 
 ## Success Criteria
 

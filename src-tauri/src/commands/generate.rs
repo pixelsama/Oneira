@@ -24,7 +24,7 @@ pub async fn generate_image(
     let output_dir_str = store
         .get("output_dir")
         .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .unwrap_or("DreamIn/Outputs".to_string());
+        .unwrap_or("Oneiria/Outputs".to_string());
 
     // 2. Resolve Output Path
     let output_path = if output_dir_str.starts_with('/') {
