@@ -79,7 +79,7 @@ export const MentionMenu = ({
     >
       {filteredItems.length === 0 ? (
         <div className="p-3 text-sm text-[var(--text-secondary)] text-center">
-          {allItems.length === 0 ? 'No items found' : 'No matches found'}
+          {items.length === 0 ? 'No items found' : 'No matches found'}
         </div>
       ) : (
         <ul className="max-h-64 overflow-y-auto">

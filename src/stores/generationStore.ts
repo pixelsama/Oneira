@@ -4,6 +4,7 @@ import { exists } from '@tauri-apps/plugin-fs';
 import { useResourceStore, type Resource } from './resourceStore';
 import type { PromptContent } from '../types/prompt';
 import { useReferenceImageStore } from './referenceImageStore';
+import type { ReferenceImage } from '../types/referenceImage';
 import { getPrefixedName } from '../lib/imageUtils';
 
 interface GenerationState {

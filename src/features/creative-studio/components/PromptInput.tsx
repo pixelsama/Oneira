@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useGenerationStore } from '../../../stores/generationStore';
 import { useReferenceImageStore } from '../../../stores/referenceImageStore';
 import { useResourceStore } from '../../../stores/resourceStore';
