@@ -40,10 +40,10 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
   setSize: (width, height) => set({ width, height }),
   setCount: (count) => set({ count }),
   loadResource: (resource) =>
-    set({
-      prompt: resource.promptTemplate,
-      promptContent: [{ type: 'text', value: resource.promptTemplate }],
-    }),
+    set((state) => ({
+      // Append a resource-reference tag to existing content (same as @ mention)
+      promptContent: [...state.promptContent, { type: 'resource-reference', value: resource.id }],
+    })),
   getSerializedPrompt: () => {
     const { prompt, promptContent } = get();
     // If promptContent is empty but prompt is set (legacy/text-only), return prompt

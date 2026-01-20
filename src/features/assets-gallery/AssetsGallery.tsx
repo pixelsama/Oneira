@@ -15,7 +15,7 @@ export const AssetsGallery = () => {
   return (
     <div className="flex flex-col h-full p-8 gap-6 overflow-y-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-neutral-100">{t('gallery.title')}</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t('gallery.title')}</h1>
         <button
           onClick={() => loadImages()}
           className="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors cursor-pointer"
