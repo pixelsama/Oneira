@@ -3,6 +3,7 @@ import { useResourceStore, type Resource } from '../../stores/resourceStore';
 import { useGenerationStore } from '../../stores/generationStore';
 import { ResourceList } from './components/ResourceList';
 import { ResourceEditor } from './components/ResourceEditor';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +17,8 @@ export const ResourceLibrary = () => {
   const { t } = useTranslation();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
+  // State for delete confirmation dialog
+  const [deletingResourceId, setDeletingResourceId] = useState<string | null>(null);
 
   useEffect(() => {
     loadResources();
@@ -57,11 +60,23 @@ export const ResourceLibrary = () => {
     setIsEditorOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm(t('library.confirm.delete'))) {
-      await deleteResource(id);
+  // Open the confirm dialog instead of deleting immediately
+  const handleDeleteRequest = (id: string) => {
+    setDeletingResourceId(id);
+  };
+
+  // Actually delete the resource after confirmation
+  const handleConfirmDelete = async () => {
+    if (deletingResourceId) {
+      await deleteResource(deletingResourceId);
       toast.success(t('library.toast.deleted'));
+      setDeletingResourceId(null);
     }
+  };
+
+  // Cancel the delete operation
+  const handleCancelDelete = () => {
+    setDeletingResourceId(null);
   };
 
   const handleOpenNew = () => {
@@ -74,6 +89,11 @@ export const ResourceLibrary = () => {
     toast.success(t('library.toast.loaded'));
     navigate('/');
   };
+
+  // Find the resource being deleted for display in the dialog
+  const resourceToDelete = deletingResourceId
+    ? resources.find((r) => r.id === deletingResourceId)
+    : null;
 
   return (
     <div className="flex flex-col h-full p-8 gap-6 overflow-y-auto">
@@ -91,7 +111,7 @@ export const ResourceLibrary = () => {
         resources={resources}
         isLoading={isLoading}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        onDelete={handleDeleteRequest}
         onLoadToStudio={handleLoadToStudio}
       />
 
@@ -100,6 +120,22 @@ export const ResourceLibrary = () => {
         onClose={() => setIsEditorOpen(false)}
         initialData={editingResource}
         onSave={handleSave}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deletingResourceId !== null}
+        title={t('library.confirm.deleteTitle')}
+        message={
+          resourceToDelete
+            ? t('library.confirm.deleteMessage', { name: resourceToDelete.name })
+            : t('library.confirm.delete')
+        }
+        confirmText={t('library.confirm.confirmButton')}
+        cancelText={t('library.confirm.cancelButton')}
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
       />
     </div>
   );

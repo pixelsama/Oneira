@@ -119,7 +119,11 @@
       "saveFailed": "保存资源失败。"
     },
     "confirm": {
-      "delete": "确定要删除此资源吗？"
+      "delete": "确定要删除此资源吗？",
+      "deleteTitle": "删除资源",
+      "deleteMessage": "确定要删除资源 \"{{name}}\" 吗？此操作无法撤销。",
+      "confirmButton": "删除",
+      "cancelButton": "取消"
     }
   }
 }
