@@ -7,7 +7,9 @@
     "downloadSuccess": "下载成功",
     "downloadFailed": "下载失败",
     "collapse": "收起",
-    "expand": "展开"
+    "expand": "展开",
+    "language": "语言",
+    "theme": "主题"
   },
   "nav": {
     "studio": "工作室",

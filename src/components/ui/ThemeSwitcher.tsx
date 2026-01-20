@@ -13,7 +13,11 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const ThemeSwitcher = () => {
+interface ThemeSwitcherProps {
+  showLabel?: boolean;
+}
+
+export const ThemeSwitcher = ({ showLabel = false }: ThemeSwitcherProps) => {
   const { t } = useTranslation();
   const { settings, setTheme } = useSettingsStore();
 
@@ -54,15 +58,26 @@ export const ThemeSwitcher = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'flex items-center justify-center p-2 rounded-lg transition-colors duration-200',
+          'flex items-center rounded-xl transition-all duration-200',
+          showLabel ? 'w-full justify-start px-4 py-3 gap-3' : 'justify-center p-3',
           'hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
           isOpen && 'bg-[var(--bg-secondary)] text-[var(--text-primary)]'
         )}
-        title="Switch theme"
+        title={t('common.theme')}
       >
-        {currentTheme === 'light' && <Sun size={20} />}
-        {currentTheme === 'dark' && <Moon size={20} />}
-        {currentTheme === 'system' && <Palette size={20} />}
+        <div className="shrink-0 flex items-center justify-center">
+          {currentTheme === 'light' && <Sun size={24} />}
+          {currentTheme === 'dark' && <Moon size={24} />}
+          {currentTheme === 'system' && <Palette size={24} />}
+        </div>
+        <span
+          className={cn(
+            'whitespace-nowrap overflow-hidden transition-all duration-300',
+            showLabel ? 'w-auto opacity-100' : 'w-0 opacity-0'
+          )}
+        >
+          {t('common.theme')}
+        </span>
       </button>
 
       {/* Popover */}

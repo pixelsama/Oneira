@@ -105,19 +105,9 @@ export const AppLayout = () => {
             </span>
           </button>
 
-          <div
-            className={`flex flex-col items-center gap-2 ${isSidebarExpanded ? 'items-start' : ''}`}
-          >
-            {/* We wrap switchers for alignment. In collapsed, center. In expanded, keep them bottom but maybe consistent styling? 
-                LanguageSwitcher and ThemeSwitcher have their own styles. Let's wrap them in a container that respects sidebar state if needed.
-                Currently they are popovers.
-            */}
-            <div
-              className={`flex flex-col gap-2 w-full ${isSidebarExpanded ? 'items-start pl-1' : 'items-center'}`}
-            >
-              <LanguageSwitcher />
-              <ThemeSwitcher />
-            </div>
+          <div className="flex flex-col gap-2 w-full">
+            <LanguageSwitcher showLabel={isSidebarExpanded} />
+            <ThemeSwitcher showLabel={isSidebarExpanded} />
           </div>
         </div>
       </aside>

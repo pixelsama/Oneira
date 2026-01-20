@@ -7,7 +7,9 @@
     "downloadSuccess": "Downloaded successfully",
     "downloadFailed": "Download failed",
     "collapse": "Collapse",
-    "expand": "Expand"
+    "expand": "Expand",
+    "language": "Language",
+    "theme": "Theme"
   },
   "nav": {
     "studio": "Studio",

@@ -13,8 +13,12 @@ const LANGUAGES = [
   { code: 'zh', label: '简体中文' },
 ];
 
-export const LanguageSwitcher = () => {
-  const { i18n } = useTranslation();
+interface LanguageSwitcherProps {
+  showLabel?: boolean;
+}
+
+export const LanguageSwitcher = ({ showLabel = false }: LanguageSwitcherProps) => {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -51,13 +55,22 @@ export const LanguageSwitcher = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'flex items-center justify-center p-2 rounded-lg transition-colors duration-200',
+          'flex items-center rounded-xl transition-all duration-200',
+          showLabel ? 'w-full justify-start px-4 py-3 gap-3' : 'justify-center p-3',
           'hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
           isOpen && 'bg-[var(--bg-secondary)] text-[var(--text-primary)]'
         )}
-        title="Change language"
+        title={t('common.language')}
       >
-        <Globe size={20} />
+        <Globe size={24} className="shrink-0" />
+        <span
+          className={cn(
+            'whitespace-nowrap overflow-hidden transition-all duration-300',
+            showLabel ? 'w-auto opacity-100' : 'w-0 opacity-0'
+          )}
+        >
+          {t('common.language')}
+        </span>
       </button>
 
       {/* Popover */}
