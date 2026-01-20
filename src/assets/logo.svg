@@ -1,0 +1,34 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cloudGradient" x1="200" y1="300" x2="800" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E0F2FE"/>
+      <stop offset="1" stop-color="#7DD3FC"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="20"/>
+      <feOffset dx="0" dy="10" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Cloud Body -->
+  <g filter="url(#softShadow)">
+    <path d="M300 700C217.157 700 150 632.843 150 550C150 472.248 208.795 408.204 285.068 400.916C312.434 285.352 416.096 200 540 200C673.57 200 783.337 295.66 805.166 421.371C881.077 435.599 940 502.247 940 582.5C940 671.14 868.14 743 779.5 743L300 743V700Z" fill="url(#cloudGradient)"/>
+  </g>
+  
+  <!-- "Z" sleepy signs -->
+  <g fill="#0369A1" font-family="Arial, sans-serif" font-weight="bold">
+    <!-- Small Z -->
+    <text x="680" y="380" font-size="80" transform="rotate(-15 680 380)">Z</text>
+    <!-- Medium Z -->
+    <text x="750" y="280" font-size="120" transform="rotate(-10 750 280)">Z</text>
+    <!-- Large Z -->
+    <text x="850" y="150" font-size="160" transform="rotate(-5 850 150)">Z</text>
+  </g>
+</svg>

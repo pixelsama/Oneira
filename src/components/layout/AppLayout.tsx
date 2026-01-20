@@ -6,6 +6,7 @@ import { useResourceStore } from '../../stores/resourceStore';
 import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import logo from '../../assets/logo.svg';
 
 export const AppLayout = () => {
   const { t } = useTranslation();
@@ -55,11 +56,12 @@ export const AppLayout = () => {
         }`}
       >
         <div
-          className={`font-bold text-xl mb-4 text-[var(--accent-color)] transition-all duration-300 whitespace-nowrap overflow-hidden ${
-            isSidebarExpanded ? 'px-6' : 'px-0'
+          className={`font-bold text-xl mb-4 text-[var(--accent-color)] transition-all duration-300 whitespace-nowrap overflow-hidden flex items-center ${
+            isSidebarExpanded ? 'px-6 gap-3' : 'px-0 justify-center'
           }`}
         >
-          {isSidebarExpanded ? 'Oneiria' : 'D'}
+          <img src={logo} alt="Oneiria Logo" className="w-8 h-8 object-contain" />
+          {isSidebarExpanded && <span>Oneiria</span>}
         </div>
         {navItems.map((item) => (
           <NavLink
