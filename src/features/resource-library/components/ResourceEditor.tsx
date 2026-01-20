@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { Resource } from '../../../stores/resourceStore';
-import { X, Save, Plus, Trash2, GripVertical, AlertTriangle, Info } from 'lucide-react';
-import { open } from '@tauri-apps/plugin-dialog';
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { X, Save, Info } from 'lucide-react';
 import { ResourceCard } from './ResourceCard';
+import { SharedImageUploader } from '../../../components/shared/SharedImageUploader';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   initialData?: Resource | null;
@@ -17,8 +17,6 @@ interface Props {
   }) => Promise<void>;
 }
 
-import { useTranslation } from 'react-i18next';
-
 export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) => {
   const { t } = useTranslation();
   const [name, setName] = useState('');
@@ -26,7 +24,6 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
   const [prompt, setPrompt] = useState('');
   const [imagePaths, setImagePaths] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -43,42 +40,6 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
-
-  const handleAddImages = async () => {
-    const selected = await open({
-      multiple: true,
-      filters: [{ name: 'Image', extensions: ['png', 'jpg', 'jpeg', 'webp'] }],
-    });
-    if (selected && Array.isArray(selected)) {
-      setImagePaths([...imagePaths, ...selected]);
-    } else if (selected) {
-      setImagePaths([...imagePaths, selected as string]);
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setImagePaths(imagePaths.filter((_, i) => i !== index));
-  };
-
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === index) return;
-
-    const newPaths = [...imagePaths];
-    const draggedItem = newPaths[draggedIndex];
-    newPaths.splice(draggedIndex, 1);
-    newPaths.splice(index, 0, draggedItem);
-    setDraggedIndex(index);
-    setImagePaths(newPaths);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,8 +65,6 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
-
-  const isOverLimit = imagePaths.length > 5;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -175,66 +134,20 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
                 <div className="flex justify-between items-center">
                   <label className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                     {t('library.editor.referenceImages')}
-                    <span
-                      className={`ml-2 normal-case font-normal ${isOverLimit ? 'text-yellow-500' : 'text-[var(--text-secondary)]'}`}
-                    >
+                    <span className="ml-2 normal-case font-normal text-[var(--text-secondary)]">
                       ({imagePaths.length} / 5)
                     </span>
                   </label>
-                  <button
-                    type="button"
-                    onClick={handleAddImages}
-                    className="flex items-center gap-1 text-xs text-[var(--accent-color)] hover:brightness-110 font-medium transition-all"
-                  >
-                    <Plus size={14} /> {t('library.editor.addImages')}
-                  </button>
                 </div>
 
-                {isOverLimit && (
-                  <div className="flex items-center gap-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-[10px] text-yellow-600 dark:text-yellow-400">
-                    <AlertTriangle size={14} />
-                    {t('library.editor.imageLimit')}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-5 gap-2 min-h-[100px] p-2 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)] border-dashed">
-                  {imagePaths.map((path, idx) => (
-                    <div
-                      key={`${path}-${idx}`}
-                      draggable
-                      onDragStart={() => handleDragStart(idx)}
-                      onDragOver={(e) => handleDragOver(e, idx)}
-                      onDragEnd={handleDragEnd}
-                      className={`relative aspect-square rounded overflow-hidden border border-[var(--border-color)] group cursor-move transition-all ${draggedIndex === idx ? 'opacity-40 scale-95' : 'opacity-100'}`}
-                    >
-                      <img
-                        src={convertFileSrc(path)}
-                        className="w-full h-full object-cover"
-                        alt={`Resource img ${idx}`}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            'https://placehold.co/100x100?text=Invalid+Path';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(idx)}
-                          className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                        <GripVertical size={12} className="text-white/70" />
-                      </div>
-                    </div>
-                  ))}
-                  {imagePaths.length === 0 && (
-                    <div className="col-span-5 flex flex-col items-center justify-center text-[var(--text-secondary)] opacity-40 py-4">
-                      <Plus size={24} />
-                      <p className="text-xs mt-1">{t('library.editor.addReferenceImages')}</p>
-                    </div>
-                  )}
-                </div>
+                <SharedImageUploader
+                  imagePaths={imagePaths}
+                  onImagesChange={setImagePaths}
+                  maxImages={5}
+                  showInlineThumbnails={true}
+                  allowReorder={true}
+                  emptyTextKey="library.editor.addReferenceImages"
+                />
               </div>
             </div>
 
