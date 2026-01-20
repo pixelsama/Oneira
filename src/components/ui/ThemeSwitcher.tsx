@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Sun, Moon, Monitor, Palette } from 'lucide-react';
+import { Sun, Moon, Monitor } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore, type ThemeMode } from '../../stores/settingsStore';
 
@@ -68,7 +68,7 @@ export const ThemeSwitcher = ({ showLabel = false }: ThemeSwitcherProps) => {
         <div className="shrink-0 flex items-center justify-center">
           {currentTheme === 'light' && <Sun size={24} />}
           {currentTheme === 'dark' && <Moon size={24} />}
-          {currentTheme === 'system' && <Palette size={24} />}
+          {currentTheme === 'system' && <Monitor size={24} />}
         </div>
         <span
           className={cn(
