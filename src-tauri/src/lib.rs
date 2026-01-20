@@ -28,7 +28,8 @@ pub fn run() {
             commands::resources::update_resource,
             commands::resources::delete_resource,
             commands::gallery::list_gallery_images,
-            commands::gallery::open_image_in_viewer
+            commands::gallery::open_image_in_viewer,
+            commands::gallery::download_image
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

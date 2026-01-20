@@ -2,6 +2,11 @@
   "app": {
     "name": "Oneiria"
   },
+  "common": {
+    "download": "下载",
+    "downloadSuccess": "下载成功",
+    "downloadFailed": "下载失败"
+  },
   "nav": {
     "studio": "工作室",
     "library": "资源库",

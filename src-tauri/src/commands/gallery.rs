@@ -3,6 +3,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::time::UNIX_EPOCH;
 use tauri::{AppHandle, Manager};
+use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_opener::OpenerExt;
 use tauri_plugin_store::StoreExt;
 
@@ -66,4 +67,33 @@ pub async fn open_image_in_viewer(app: AppHandle, path: String) -> Result<(), St
         .open_path(&path, None::<&str>)
         .map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn download_image(
+    app: AppHandle,
+    source_path: String,
+    default_filename: String,
+) -> Result<bool, String> {
+    use tauri_plugin_dialog::FilePath;
+
+    // Use blocking dialog (save dialog returns Option<FilePath>)
+    let file_path = app
+        .dialog()
+        .file()
+        .set_file_name(&default_filename)
+        .add_filter("Images", &["png", "jpg", "jpeg", "webp"])
+        .blocking_save_file();
+
+    match file_path {
+        Some(FilePath::Path(save_path)) => {
+            // Copy the file using std::fs (no permission restrictions)
+            fs::copy(&source_path, &save_path).map_err(|e| e.to_string())?;
+            Ok(true)
+        }
+        _ => {
+            // User cancelled or other FilePath variant
+            Ok(false)
+        }
+    }
 }
