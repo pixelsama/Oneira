@@ -33,24 +33,34 @@
       "provider": {
         "title": "AI 服务商",
         "label": "选择服务商",
-        "openai": "OpenAI (DALL-E 3)",
-        "doubao": "火山引擎豆包 (Seedream)"
+        "doubao": "火山引擎豆包 (Seedream)",
+        "zhipu": "智谱 (GLM-Image)"
       },
       "config": {
         "title": "配置",
-        "openai": {
-          "label": "OpenAI API 密钥",
-          "placeholder": "sk-...",
-          "hint": "您的 API 密钥仅存储在本地设备。"
-        },
         "doubao": {
           "label": "豆包 API 密钥",
           "placeholder": "您的火山引擎 API 密钥",
           "hint": "需要从火山引擎控制台获取 API 密钥。"
+        },
+        "zhipu": {
+          "label": "智谱 API 密钥",
+          "placeholder": "您的智谱 API 密钥",
+          "hint": "需要从智谱开放平台获取 API 密钥。",
+          "watermark": {
+            "label": "启用水印",
+            "hint": "关闭需签署免责声明"
+          }
         }
       },
       "save": "保存设置",
-      "saveSuccess": "设置已保存"
+      "saveSuccess": "设置已保存",
+      "unsavedChanges": {
+        "title": "未保存的更改",
+        "message": "您有未保存的更改。您想在离开之前保存吗？",
+        "save": "保存并离开",
+        "discard": "不保存"
+      }
     }
   },
   "studio": {

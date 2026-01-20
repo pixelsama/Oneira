@@ -19,7 +19,7 @@ pub async fn generate_image(
     let provider = store
         .get("provider")
         .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .unwrap_or_else(|| "openai".to_string());
+        .unwrap_or_else(|| "doubao".to_string());
 
     let output_dir_str = store
         .get("output_dir")
@@ -42,10 +42,9 @@ pub async fn generate_image(
 
     let client = Client::new();
 
-    if provider == "doubao" {
-        return generate_doubao(&store, &client, &output_path, payload).await;
-    } else {
-        return generate_openai(&store, &client, &output_path, payload).await;
+    match provider.as_str() {
+        "zhipu" => generate_zhipu(&store, &client, &output_path, payload).await,
+        _ => generate_doubao(&store, &client, &output_path, payload).await,
     }
 }
 
@@ -146,6 +145,83 @@ async fn generate_doubao(
     Ok(saved_paths)
 }
 
+async fn generate_zhipu(
+    store: &tauri_plugin_store::Store<tauri::Wry>,
+    client: &Client,
+    output_path: &Path,
+    payload: GeneratePayload,
+) -> Result<Vec<String>, String> {
+    let api_token = store
+        .get("zhipu_api_key")
+        .and_then(|v| v.as_str().map(|s| s.to_string()))
+        .ok_or("Zhipu API Token not found. Please configure it in Settings.")?;
+
+    let url = "https://open.bigmodel.cn/api/paas/v4/images/generations";
+    let model = "glm-image";
+
+    let size_str = format!("{}x{}", payload.width, payload.height);
+
+    // Read watermark setting, default to true
+    let watermark_enabled = store
+        .get("zhipu_watermark")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true);
+
+    // Zhipu only supports text-to-image, no reference images
+    let body = json!({
+        "model": model,
+        "prompt": payload.prompt,
+        "size": size_str,
+        "watermark_enabled": watermark_enabled
+    });
+
+    let res = client
+        .post(url)
+        .header("Authorization", format!("Bearer {}", api_token))
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if !res.status().is_success() {
+        let err_text = res.text().await.unwrap_or_default();
+        return Err(format!("Zhipu API Error: {}", err_text));
+    }
+
+    let json: serde_json::Value = res.json().await.map_err(|e| e.to_string())?;
+
+    let mut saved_paths = Vec::new();
+    if let Some(data) = json.get("data").and_then(|d| d.as_array()) {
+        for (i, item) in data.iter().enumerate() {
+            if let Some(image_url) = item.get("url").and_then(|v| v.as_str()) {
+                let timestamp = chrono::Utc::now().timestamp_millis();
+                let filename = format!("zhipu_{}_{}.png", timestamp, i);
+                let file_path = output_path.join(&filename);
+
+                // Download image
+                let img_bytes = client
+                    .get(image_url)
+                    .send()
+                    .await
+                    .map_err(|e| format!("Failed to download image: {}", e))?
+                    .bytes()
+                    .await
+                    .map_err(|e| format!("Failed to read image bytes: {}", e))?;
+
+                let mut file = fs::File::create(&file_path).map_err(|e| e.to_string())?;
+                file.write_all(&img_bytes).map_err(|e| e.to_string())?;
+
+                saved_paths.push(file_path.to_string_lossy().to_string());
+            }
+        }
+    } else {
+        return Err("No data in Zhipu response".to_string());
+    }
+
+    Ok(saved_paths)
+}
+
 fn get_mime_type(path: &Path) -> Result<String, String> {
     let ext = path
         .extension()
@@ -182,74 +258,4 @@ fn image_to_base64_uri(path_str: &str) -> Result<String, String> {
     let b64 = BASE64_STANDARD.encode(&bytes);
 
     Ok(format!("data:{};base64,{}", mime_type, b64))
-}
-
-async fn generate_openai(
-    store: &tauri_plugin_store::Store<tauri::Wry>,
-    client: &Client,
-    output_path: &Path,
-    payload: GeneratePayload,
-) -> Result<Vec<String>, String> {
-    let api_token = store
-        .get("openai_api_key")
-        .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .or_else(|| {
-            store
-                .get("api_token")
-                .and_then(|v| v.as_str().map(|s| s.to_string()))
-        })
-        .ok_or("OpenAI API Token not found. Please configure it in Settings.")?;
-
-    let api_url = store
-        .get("api_url")
-        .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .unwrap_or("https://api.openai.com/v1/images/generations".to_string());
-
-    let model = "dall-e-3";
-
-    let body = json!({
-        "model": model,
-        "prompt": payload.prompt,
-        "n": payload.count,
-        "size": format!("{}x{}", payload.width, payload.height),
-        "response_format": "b64_json",
-        "quality": "standard"
-    });
-
-    let res = client
-        .post(&api_url)
-        .header("Authorization", format!("Bearer {}", api_token))
-        .header("Content-Type", "application/json")
-        .json(&body)
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    if !res.status().is_success() {
-        let err_text = res.text().await.unwrap_or_default();
-        return Err(format!("OpenAI API Error: {}", err_text));
-    }
-
-    let json: serde_json::Value = res.json().await.map_err(|e| e.to_string())?;
-
-    let mut saved_paths = Vec::new();
-    if let Some(data) = json.get("data").and_then(|d| d.as_array()) {
-        for (i, item) in data.iter().enumerate() {
-            if let Some(b64) = item.get("b64_json").and_then(|v| v.as_str()) {
-                let bytes = BASE64_STANDARD.decode(b64).map_err(|e| e.to_string())?;
-                let timestamp = chrono::Utc::now().timestamp_millis();
-                let filename = format!("img_{}_{}.png", timestamp, i);
-                let file_path = output_path.join(&filename);
-
-                let mut file = fs::File::create(&file_path).map_err(|e| e.to_string())?;
-                file.write_all(&bytes).map_err(|e| e.to_string())?;
-
-                saved_paths.push(file_path.to_string_lossy().to_string());
-            }
-        }
-    } else {
-        return Err("No data in response".to_string());
-    }
-
-    Ok(saved_paths)
 }

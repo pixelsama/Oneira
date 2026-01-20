@@ -5,8 +5,9 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 
 interface AppSettings {
   provider: string;
-  openaiApiKey: string | null;
   doubaoApiKey: string | null;
+  zhipuApiKey: string | null;
+  zhipuWatermark: boolean;
   theme: ThemeMode;
 }
 
@@ -15,7 +16,7 @@ interface SettingsState {
   isLoading: boolean;
   saveSettings: (settings: AppSettings) => Promise<void>;
   loadSettings: () => Promise<void>;
-  updateSetting: (key: keyof AppSettings, value: string | null) => void;
+  updateSetting: (key: keyof AppSettings, value: string | boolean | null) => void;
   setTheme: (theme: ThemeMode) => Promise<void>;
 }
 
@@ -34,9 +35,10 @@ const applyThemeToDom = (theme: ThemeMode) => {
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   settings: {
-    provider: 'openai',
-    openaiApiKey: null,
+    provider: 'doubao',
     doubaoApiKey: null,
+    zhipuApiKey: null,
+    zhipuWatermark: true,
     theme: 'system',
   },
   isLoading: true,

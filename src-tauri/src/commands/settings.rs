@@ -7,8 +7,9 @@ use tauri_plugin_store::StoreExt;
 #[serde(rename_all = "camelCase")]
 pub struct AppSettings {
     pub provider: String,
-    pub openai_api_key: Option<String>,
     pub doubao_api_key: Option<String>,
+    pub zhipu_api_key: Option<String>,
+    pub zhipu_watermark: Option<bool>,
     pub theme: Option<String>,
 }
 
@@ -18,14 +19,16 @@ pub async fn save_settings(app: AppHandle, settings: AppSettings) -> Result<(), 
 
     store.set("provider", json!(settings.provider));
 
-    if let Some(key) = settings.openai_api_key {
-        store.set("openai_api_key", json!(key));
-        // Backward compatibility
-        store.set("api_token", json!(key));
-    }
-
     if let Some(key) = settings.doubao_api_key {
         store.set("doubao_api_key", json!(key));
+    }
+
+    if let Some(key) = settings.zhipu_api_key {
+        store.set("zhipu_api_key", json!(key));
+    }
+
+    if let Some(watermark) = settings.zhipu_watermark {
+        store.set("zhipu_watermark", json!(watermark));
     }
 
     if let Some(theme) = settings.theme {
@@ -43,20 +46,17 @@ pub async fn get_settings(app: AppHandle) -> Result<AppSettings, String> {
     let provider = store
         .get("provider")
         .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .unwrap_or_else(|| "openai".to_string());
-
-    let openai_api_key = store
-        .get("openai_api_key")
-        .and_then(|v| v.as_str().map(|s| s.to_string()))
-        .or_else(|| {
-            store
-                .get("api_token")
-                .and_then(|v| v.as_str().map(|s| s.to_string()))
-        });
+        .unwrap_or_else(|| "doubao".to_string());
 
     let doubao_api_key = store
         .get("doubao_api_key")
         .and_then(|v| v.as_str().map(|s| s.to_string()));
+
+    let zhipu_api_key = store
+        .get("zhipu_api_key")
+        .and_then(|v| v.as_str().map(|s| s.to_string()));
+
+    let zhipu_watermark = store.get("zhipu_watermark").and_then(|v| v.as_bool());
 
     let theme = store
         .get("theme")
@@ -64,8 +64,9 @@ pub async fn get_settings(app: AppHandle) -> Result<AppSettings, String> {
 
     Ok(AppSettings {
         provider,
-        openai_api_key,
         doubao_api_key,
+        zhipu_api_key,
+        zhipu_watermark,
         theme,
     })
 }

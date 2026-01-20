@@ -33,24 +33,34 @@
       "provider": {
         "title": "AI Provider",
         "label": "Select Provider",
-        "openai": "OpenAI (DALL-E 3)",
-        "doubao": "Volcengine Doubao (Seedream)"
+        "doubao": "Volcengine Doubao (Seedream)",
+        "zhipu": "Zhipu AI (GLM-Image)"
       },
       "config": {
         "title": "Configuration",
-        "openai": {
-          "label": "OpenAI API Key",
-          "placeholder": "sk-...",
-          "hint": "Your API key is stored locally on your device."
-        },
         "doubao": {
           "label": "Doubao API Key",
           "placeholder": "Your Volcengine API Key",
           "hint": "Requires an API Key from Volcengine Console."
+        },
+        "zhipu": {
+          "label": "Zhipu API Key",
+          "placeholder": "Your Zhipu API Key",
+          "hint": "Requires an API Key from Zhipu Open Platform.",
+          "watermark": {
+            "label": "Enable Watermark",
+            "hint": "Disabling requires disclaimer"
+          }
         }
       },
       "save": "Save Settings",
-      "saveSuccess": "Settings saved successfully"
+      "saveSuccess": "Settings saved successfully",
+      "unsavedChanges": {
+        "title": "Unsaved Changes",
+        "message": "You have unsaved changes. Would you like to save before leaving?",
+        "save": "Save & Leave",
+        "discard": "Discard"
+      }
     }
   },
   "studio": {
