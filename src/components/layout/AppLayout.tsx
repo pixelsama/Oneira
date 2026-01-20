@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Palette, Library, Image, Settings } from 'lucide-react';
+import { Palette, Library, Image, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useResourceStore } from '../../stores/resourceStore';
 import { ThemeSwitcher } from '../ui/ThemeSwitcher';
@@ -11,6 +11,7 @@ export const AppLayout = () => {
   const { t } = useTranslation();
   const { loadSettings, settings } = useSettingsStore();
   const { loadResources } = useResourceStore();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   // Load settings and resources on app startup
   useEffect(() => {
@@ -48,28 +49,76 @@ export const AppLayout = () => {
 
   return (
     <div className="flex h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans transition-colors duration-300">
-      <aside className="w-16 flex flex-col items-center py-4 border-r border-[var(--border-color)] space-y-4 bg-[var(--bg-sidebar)] transition-colors duration-300">
-        <div className="font-bold text-xl mb-4 text-[var(--accent-color)]">D</div>
+      <aside
+        className={`flex flex-col py-4 border-r border-[var(--border-color)] space-y-4 bg-[var(--bg-sidebar)] transition-all duration-300 ease-in-out ${
+          isSidebarExpanded ? 'w-64' : 'w-16 items-center'
+        }`}
+      >
+        <div
+          className={`font-bold text-xl mb-4 text-[var(--accent-color)] transition-all duration-300 whitespace-nowrap overflow-hidden ${
+            isSidebarExpanded ? 'px-6' : 'px-0'
+          }`}
+        >
+          {isSidebarExpanded ? 'Oneiria' : 'D'}
+        </div>
         {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
-            title={item.label}
+            title={isSidebarExpanded ? '' : item.label}
             className={({ isActive }) =>
-              `p-3 rounded-xl transition-colors ${
+              `flex items-center rounded-xl transition-all duration-300 mx-2 ${
+                isSidebarExpanded ? 'justify-start px-4 py-3 gap-3' : 'justify-center p-3'
+              } ${
                 isActive
                   ? 'bg-[var(--accent-color)] text-white'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]'
               }`
             }
           >
-            <item.icon size={24} />
+            <item.icon size={24} className="shrink-0" />
+            <span
+              className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isSidebarExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'
+              }`}
+            >
+              {item.label}
+            </span>
           </NavLink>
         ))}
 
-        <div className="mt-auto mb-2 flex flex-col items-center gap-2">
-          <LanguageSwitcher />
-          <ThemeSwitcher />
+        <div className="mt-auto flex flex-col gap-2 mx-2">
+          <button
+            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+            className={`flex items-center rounded-xl transition-colors duration-200 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] ${
+              isSidebarExpanded ? 'justify-start px-4 py-3 gap-3' : 'justify-center p-3'
+            }`}
+            title={isSidebarExpanded ? t('common.collapse') : t('common.expand')}
+          >
+            {isSidebarExpanded ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+            <span
+              className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isSidebarExpanded ? 'w-auto opacity-100' : 'w-0 opacity-0'
+              }`}
+            >
+              {isSidebarExpanded ? t('common.collapse', 'Collapse') : ''}
+            </span>
+          </button>
+
+          <div
+            className={`flex flex-col items-center gap-2 ${isSidebarExpanded ? 'items-start' : ''}`}
+          >
+            {/* We wrap switchers for alignment. In collapsed, center. In expanded, keep them bottom but maybe consistent styling? 
+                LanguageSwitcher and ThemeSwitcher have their own styles. Let's wrap them in a container that respects sidebar state if needed.
+                Currently they are popovers.
+            */}
+            <div
+              className={`flex flex-col gap-2 w-full ${isSidebarExpanded ? 'items-start pl-1' : 'items-center'}`}
+            >
+              <LanguageSwitcher />
+              <ThemeSwitcher />
+            </div>
+          </div>
         </div>
       </aside>
       <main className="flex-1 overflow-hidden bg-[var(--bg-primary)] transition-colors duration-300">

@@ -5,7 +5,9 @@
   "common": {
     "download": "Download",
     "downloadSuccess": "Downloaded successfully",
-    "downloadFailed": "Download failed"
+    "downloadFailed": "Download failed",
+    "collapse": "Collapse",
+    "expand": "Expand"
   },
   "nav": {
     "studio": "Studio",
