@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Resource } from '../../../stores/resourceStore';
 import { X, Save, Info } from 'lucide-react';
 import { ResourceCard } from './ResourceCard';
 import { SharedImageUploader } from '../../../components/shared/SharedImageUploader';
 import { useTranslation } from 'react-i18next';
+import type { ReferenceImage } from '../../../types/referenceImage';
+import type { PromptContent } from '../../../types/prompt';
+import { generateThumbnail, ACCEPTED_EXTENSIONS } from '../../../lib/imageUtils';
+import { UploadedImageCard } from '../../creative-studio/components/UploadedImageCard';
+import { toast } from 'sonner';
+import { MentionEditor } from '../../../components/shared/MentionEditor';
 
 interface Props {
   initialData?: Resource | null;
@@ -21,32 +27,140 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [prompt, setPrompt] = useState('');
-  const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const [promptContent, setPromptContent] = useState<PromptContent[]>([]);
+  const [referenceImages, setReferenceImages] = useState<ReferenceImage[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
 
   useEffect(() => {
-    if (initialData) {
-      setName(initialData.name);
-      setDescription(initialData.description || '');
-      setPrompt(initialData.promptTemplate);
-      setImagePaths(initialData.images || []);
-    } else {
-      setName('');
-      setDescription('');
-      setPrompt('');
-      setImagePaths([]);
+    const loadImagesAndPrompt = async () => {
+      if (initialData) {
+        setName(initialData.name);
+        setDescription(initialData.description || '');
+
+        // Handle prompt JSON parsing
+        try {
+          const parsed = JSON.parse(initialData.promptTemplate);
+          if (Array.isArray(parsed)) {
+            setPromptContent(parsed);
+          } else {
+            setPromptContent([{ type: 'text', value: initialData.promptTemplate }]);
+          }
+        } catch {
+          setPromptContent([{ type: 'text', value: initialData.promptTemplate }]);
+        }
+
+        if (initialData.images && initialData.images.length > 0) {
+          setIsProcessingImages(true);
+          const loadedImages: ReferenceImage[] = await Promise.all(
+            initialData.images.map(async (path) => {
+              const filename = path.split(new RegExp('[\\/]')).pop() || 'image';
+              const extension = filename.split('.').pop()?.toLowerCase() || 'png';
+              const mimeType = `image/${extension === 'jpg' ? 'jpeg' : extension}`;
+              const thumbnail = await generateThumbnail(path, mimeType);
+
+              return {
+                id: path, // Use path as stable ID for resource images
+                originalPath: path,
+                displayName: filename.substring(0, filename.lastIndexOf('.')) || filename,
+                originalFileName: filename,
+                thumbnailDataUrl: thumbnail,
+                addedAt: Date.now(),
+                source: 'resource',
+                resourceId: initialData.id,
+              };
+            })
+          );
+          setReferenceImages(loadedImages);
+          setIsProcessingImages(false);
+        } else {
+          setReferenceImages([]);
+        }
+      } else {
+        setName('');
+        setDescription('');
+        setPromptContent([]);
+        setReferenceImages([]);
+      }
+    };
+
+    if (isOpen) {
+      loadImagesAndPrompt();
     }
   }, [initialData, isOpen]);
+
+  const handleImagesChange = useCallback(
+    async (newPaths: string[]) => {
+      const existingPaths = new Set(referenceImages.map((img) => img.originalPath));
+      const addedPaths = newPaths.filter((p) => !existingPaths.has(p));
+
+      // Handle removals
+      if (newPaths.length < referenceImages.length) {
+        const pathSet = new Set(newPaths);
+        setReferenceImages((prev) => prev.filter((img) => pathSet.has(img.originalPath)));
+      }
+
+      if (addedPaths.length === 0) return;
+
+      setIsProcessingImages(true);
+
+      const newImages: ReferenceImage[] = [];
+      for (const path of addedPaths) {
+        const filename = path.split(new RegExp('[\\/]')).pop() || 'image';
+        const extension = filename.split('.').pop()?.toLowerCase();
+
+        if (!extension || !ACCEPTED_EXTENSIONS.includes(extension)) {
+          toast.error(`Skipped ${filename}: Unsupported format`);
+          continue;
+        }
+
+        const mimeType = `image/${extension === 'jpg' ? 'jpeg' : extension}`;
+
+        try {
+          const thumbnail = await generateThumbnail(path, mimeType);
+
+          newImages.push({
+            id: path, // Use path as ID
+            originalPath: path,
+            displayName: filename.substring(0, filename.lastIndexOf('.')) || filename,
+            originalFileName: filename,
+            thumbnailDataUrl: thumbnail,
+            addedAt: Date.now(),
+            source: 'resource',
+            resourceId: initialData?.id,
+          });
+        } catch (error) {
+          console.error(`Failed to process ${filename}:`, error);
+          toast.error(`Failed to load ${filename}`);
+        }
+      }
+
+      setReferenceImages((prev) => [...prev, ...newImages]);
+      setIsProcessingImages(false);
+    },
+    [referenceImages, initialData?.id]
+  );
+
+  const handleUpdateImageName = (id: string, newName: string) => {
+    setReferenceImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, displayName: newName } : img))
+    );
+  };
+
+  const handleRemoveImage = (id: string) => {
+    setReferenceImages((prev) => prev.filter((img) => img.id !== id));
+  };
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !prompt) return;
+    if (!name || promptContent.length === 0) return;
 
     setIsSaving(true);
     try {
+      const imagePaths = referenceImages.map((img) => img.originalPath);
+      const prompt = JSON.stringify(promptContent);
       await onSave({ name, description, prompt, imagePaths });
       onClose();
     } catch (e) {
@@ -60,8 +174,8 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
     id: initialData?.id || 'preview',
     name: name || t('library.editor.titleNew'),
     description: description,
-    promptTemplate: prompt || 'No prompt template defined',
-    images: imagePaths,
+    promptTemplate: JSON.stringify(promptContent),
+    images: referenceImages.map((img) => img.originalPath),
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -121,12 +235,20 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
                     <Info size={10} /> {t('library.editor.promptHint')}
                   </span>
                 </div>
-                <textarea
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[var(--accent-color)]/50 outline-none text-[var(--text-primary)] h-32 resize-none font-mono text-sm placeholder:text-[var(--text-secondary)] placeholder:opacity-50 transition-all duration-200"
+                <MentionEditor
+                  content={promptContent}
+                  onChange={setPromptContent}
+                  mentionItems={referenceImages.map((img) => ({
+                    id: img.id,
+                    type: 'image',
+                    displayName: img.displayName,
+                    thumbnail: img.thumbnailDataUrl,
+                    originalObject: img,
+                  }))}
                   placeholder={t('library.editor.promptPlaceholder')}
-                  required
+                  disabled={isSaving}
+                  getImageById={(id) => referenceImages.find((img) => img.id === id)}
+                  className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg px-3 py-2.5 focus-within:ring-2 focus-within:ring-[var(--accent-color)]/50 outline-none text-[var(--text-primary)] min-h-[128px] max-h-[256px] overflow-y-auto whitespace-pre-wrap font-mono text-sm placeholder:text-[var(--text-secondary)] placeholder:opacity-50 transition-all duration-200"
                 />
               </div>
 
@@ -135,19 +257,40 @@ export const ResourceEditor = ({ initialData, isOpen, onClose, onSave }: Props) 
                   <label className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                     {t('library.editor.referenceImages')}
                     <span className="ml-2 normal-case font-normal text-[var(--text-secondary)]">
-                      ({imagePaths.length} / 5)
+                      ({referenceImages.length} / 5)
                     </span>
                   </label>
                 </div>
 
+                {new Set(referenceImages.map((img) => img.displayName)).size !==
+                  referenceImages.length && (
+                  <div className="flex items-center gap-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-[10px] text-yellow-600 dark:text-yellow-400 mb-2">
+                    <Info size={14} />
+                    {t('library.editor.duplicateNameWarning')}
+                  </div>
+                )}
+
                 <SharedImageUploader
-                  imagePaths={imagePaths}
-                  onImagesChange={setImagePaths}
+                  imagePaths={referenceImages.map((img) => img.originalPath)}
+                  onImagesChange={handleImagesChange}
                   maxImages={5}
-                  showInlineThumbnails={true}
-                  allowReorder={true}
+                  showInlineThumbnails={false}
+                  isProcessing={isProcessingImages}
                   emptyTextKey="library.editor.addReferenceImages"
                 />
+
+                {referenceImages.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {referenceImages.map((img) => (
+                      <UploadedImageCard
+                        key={img.id}
+                        image={img}
+                        onRemove={handleRemoveImage}
+                        onUpdateName={handleUpdateImageName}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

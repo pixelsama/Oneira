@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -9,6 +10,7 @@ pub struct GeneratePayload {
     pub height: u32,
     pub count: u32,
     pub reference_images: Option<Vec<String>>,
+    pub image_mapping: Option<HashMap<String, String>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

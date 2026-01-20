@@ -1,9 +1,10 @@
 import { convertFileSrc } from '@tauri-apps/api/core';
 import type { Resource } from '../../../stores/resourceStore';
 import { Trash2, Edit, Play, Copy, Check, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import type { PromptContent } from '../../../types/prompt';
 
 interface Props {
   resource: Resource;
@@ -49,9 +50,28 @@ export const ResourceCard = ({ resource, onEdit, onDelete, onLoadToStudio }: Pro
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
+  const displayPrompt = useMemo(() => {
+    try {
+      const parsed = JSON.parse(resource.promptTemplate);
+      if (Array.isArray(parsed)) {
+        return (parsed as PromptContent[])
+          .map((item) => {
+            if (item.type === 'text') return item.value;
+            if (item.type === 'image-reference') return `@[image]`;
+            if (item.type === 'resource-reference') return `@[resource]`;
+            return '';
+          })
+          .join('');
+      }
+    } catch {
+      // Not JSON, return as is
+    }
+    return resource.promptTemplate;
+  }, [resource.promptTemplate]);
+
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(resource.promptTemplate);
+    navigator.clipboard.writeText(displayPrompt);
     setCopied(true);
     toast.success(t('library.card.promptCopied'));
     setTimeout(() => setCopied(false), 2000);
@@ -149,10 +169,10 @@ export const ResourceCard = ({ resource, onEdit, onDelete, onLoadToStudio }: Pro
 
         <div className="relative group/prompt">
           <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2 leading-relaxed font-mono bg-[var(--bg-primary)]/50 p-2 rounded border border-[var(--border-color)]/50">
-            {resource.promptTemplate}
+            {displayPrompt}
           </p>
           <div className="invisible group-hover/prompt:visible absolute bottom-full left-0 mb-2 w-64 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-2xl z-20 text-xs text-[var(--text-primary)] break-words font-mono whitespace-pre-wrap max-h-48 overflow-y-auto pointer-events-none">
-            {resource.promptTemplate}
+            {displayPrompt}
             <div className="absolute -bottom-1 left-4 w-2 h-2 bg-[var(--bg-secondary)] border-b border-r border-[var(--border-color)] rotate-45"></div>
           </div>
         </div>

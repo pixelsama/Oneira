@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { ReferenceImage } from '../../../types/referenceImage';
-import { useReferenceImageStore } from '../../../stores/referenceImageStore';
-import { useResourceStore, type Resource } from '../../../stores/resourceStore';
+import { type Resource } from '../../../stores/resourceStore';
 import { Image as ImageIcon, Package } from 'lucide-react';
-import { convertFileSrc } from '@tauri-apps/api/core';
 
 export interface MentionItem {
   id: string;
@@ -17,6 +15,7 @@ export interface MentionItem {
 }
 
 interface MentionMenuProps {
+  items: MentionItem[];
   isOpen: boolean;
   filterText: string;
   onSelect: (item: MentionItem) => void;
@@ -25,14 +24,13 @@ interface MentionMenuProps {
 }
 
 export const MentionMenu = ({
+  items,
   isOpen,
   filterText,
   onSelect,
   onClose,
   position,
 }: MentionMenuProps) => {
-  const { images } = useReferenceImageStore();
-  const { resources } = useResourceStore();
   // Use a key-based approach to reset selectedIndex when filterText changes
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [prevFilterText, setPrevFilterText] = useState(filterText);
@@ -43,27 +41,7 @@ export const MentionMenu = ({
     setSelectedIndex(0);
   }
 
-  const imageItems: MentionItem[] = images.map((img) => ({
-    id: img.id,
-    type: 'image',
-    displayName: img.displayName,
-    thumbnail: img.thumbnailDataUrl,
-    originalObject: img,
-  }));
-
-  const resourceItems: MentionItem[] = resources.map((res) => ({
-    id: res.id,
-    type: 'resource',
-    displayName: res.name,
-    thumbnail: res.images.length > 0 ? convertFileSrc(res.images[0]) : undefined,
-    imageCount: res.images.length,
-    promptPreview: res.promptTemplate,
-    originalObject: res,
-  }));
-
-  const allItems = [...imageItems, ...resourceItems];
-
-  const filteredItems = allItems.filter((item) =>
+  const filteredItems = items.filter((item) =>
     item.displayName.toLowerCase().includes(filterText.toLowerCase())
   );
 

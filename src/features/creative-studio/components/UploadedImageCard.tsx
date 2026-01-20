@@ -5,9 +5,11 @@ import { useReferenceImageStore } from '../../../stores/referenceImageStore';
 
 interface UploadedImageCardProps {
   image: ReferenceImage;
+  onRemove?: (id: string) => void;
+  onUpdateName?: (id: string, name: string) => void;
 }
 
-export const UploadedImageCard = ({ image }: UploadedImageCardProps) => {
+export const UploadedImageCard = ({ image, onRemove, onUpdateName }: UploadedImageCardProps) => {
   const { removeImage, updateDisplayName } = useReferenceImageStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(image.displayName);
@@ -20,12 +22,25 @@ export const UploadedImageCard = ({ image }: UploadedImageCardProps) => {
   }, [isEditing]);
 
   const handleSave = () => {
-    if (editedName.trim()) {
-      updateDisplayName(image.id, editedName.trim());
+    const trimmedName = editedName.trim();
+    if (trimmedName) {
+      if (onUpdateName) {
+        onUpdateName(image.id, trimmedName);
+      } else {
+        updateDisplayName(image.id, trimmedName);
+      }
     } else {
       setEditedName(image.displayName); // Revert if empty
     }
     setIsEditing(false);
+  };
+
+  const handleRemove = () => {
+    if (onRemove) {
+      onRemove(image.id);
+    } else {
+      removeImage(image.id);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -53,7 +68,7 @@ export const UploadedImageCard = ({ image }: UploadedImageCardProps) => {
         )}
 
         <button
-          onClick={() => removeImage(image.id)}
+          onClick={handleRemove}
           className="absolute top-1 right-1 p-1 bg-black/60 hover:bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all transform scale-90 hover:scale-100"
           title="Remove image"
         >

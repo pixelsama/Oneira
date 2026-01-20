@@ -1,4 +1,5 @@
 import { readFile } from '@tauri-apps/plugin-fs';
+import type { ReferenceImage } from '../types/referenceImage';
 
 export const MAX_THUMBNAIL_SIZE = 200;
 export const ACCEPTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
@@ -6,6 +7,20 @@ export const ACCEPTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 export const getMimeType = (extension: string): string => {
   const ext = extension.toLowerCase();
   return `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+};
+
+export const generateShortId = (): string => {
+  return Math.random().toString(36).substring(2, 8);
+};
+
+export const getPrefixedName = (image: ReferenceImage): string => {
+  if (image.source === 'studio') {
+    const shortId = image.id.substring(0, 4);
+    return `s_${shortId}_${image.displayName}`;
+  } else {
+    const shortResId = (image.resourceId || 'unknown').substring(0, 6);
+    return `r_${shortResId}_${image.displayName}`;
+  }
 };
 
 export const generateThumbnail = async (path: string, mimeType: string): Promise<string> => {

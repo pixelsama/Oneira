@@ -42,6 +42,7 @@ export const ImageUploader = () => {
             originalFileName: filename,
             thumbnailDataUrl: thumbnail,
             addedAt: Date.now(),
+            source: 'studio',
           });
         } catch (error) {
           console.error(`Failed to process ${filename}:`, error);

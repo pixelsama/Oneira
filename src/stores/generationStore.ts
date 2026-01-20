@@ -4,6 +4,7 @@ import { exists } from '@tauri-apps/plugin-fs';
 import { useResourceStore, type Resource } from './resourceStore';
 import type { PromptContent } from '../types/prompt';
 import { useReferenceImageStore } from './referenceImageStore';
+import { getPrefixedName } from '../lib/imageUtils';
 
 interface GenerationState {
   prompt: string;
@@ -23,6 +24,7 @@ interface GenerationState {
   generate: () => Promise<void>;
   getSerializedPrompt: () => string;
   getReferencedImagePaths: () => string[];
+  getImageMapping: () => Record<string, string>;
 }
 
 export const useGenerationStore = create<GenerationState>((set, get) => ({
@@ -54,7 +56,7 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
         if (item.type === 'text') return item.value;
         if (item.type === 'image-reference') {
           const img = useReferenceImageStore.getState().getImageById(item.value);
-          return img ? `图片文件[${img.displayName}]` : '';
+          return img ? `图片文件[${getPrefixedName(img)}]` : '';
         }
         if (item.type === 'resource-reference') {
           const res = useResourceStore.getState().getResourceById(item.value);
@@ -62,7 +64,34 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
             console.warn(`Warning: Resource ${item.value} not found, skipping`);
             return '';
           }
-          return res.promptTemplate;
+
+          try {
+            const parsed = JSON.parse(res.promptTemplate);
+            if (Array.isArray(parsed)) {
+              return (parsed as PromptContent[])
+                .map((c) => {
+                  if (c.type === 'text') return c.value;
+                  if (c.type === 'image-reference') {
+                    const path = c.value;
+                    const filename = path.split(/[\\/]/).pop() || 'image';
+                    const displayName =
+                      filename.substring(0, filename.lastIndexOf('.')) || filename;
+
+                    const img = {
+                      id: path,
+                      displayName: displayName,
+                      source: 'resource' as const,
+                      resourceId: res.id,
+                    } as ReferenceImage;
+                    return `图片文件[${getPrefixedName(img)}]`;
+                  }
+                  return '';
+                })
+                .join('');
+            }
+          } catch {
+            return res.promptTemplate;
+          }
         }
         return '';
       })
@@ -88,9 +117,56 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
 
     return Array.from(paths);
   },
+  getImageMapping: () => {
+    const { promptContent } = get();
+    const mapping: Record<string, string> = {};
+
+    promptContent.forEach((item) => {
+      if (item.type === 'image-reference') {
+        const img = useReferenceImageStore.getState().getImageById(item.value);
+        if (img) {
+          mapping[getPrefixedName(img)] = img.originalPath;
+        }
+      } else if (item.type === 'resource-reference') {
+        const res = useResourceStore.getState().getResourceById(item.value);
+        if (res) {
+          try {
+            const parsed = JSON.parse(res.promptTemplate);
+            if (Array.isArray(parsed)) {
+              (parsed as PromptContent[]).forEach((c) => {
+                if (c.type === 'image-reference') {
+                  const path = c.value;
+                  const filename = path.split(/[\\/]/).pop() || 'image';
+                  const displayName = filename.substring(0, filename.lastIndexOf('.')) || filename;
+                  const img = {
+                    id: path,
+                    displayName,
+                    source: 'resource' as const,
+                    resourceId: res.id,
+                  } as ReferenceImage;
+                  mapping[getPrefixedName(img)] = path;
+                }
+              });
+            }
+          } catch {
+            // Legacy/plain text
+          }
+        }
+      }
+    });
+
+    return mapping;
+  },
   generate: async () => {
-    const { negativePrompt, width, height, count, getSerializedPrompt, getReferencedImagePaths } =
-      get();
+    const {
+      negativePrompt,
+      width,
+      height,
+      count,
+      getSerializedPrompt,
+      getReferencedImagePaths,
+      getImageMapping,
+    } = get();
     const prompt = getSerializedPrompt();
 
     if (!prompt) return;
@@ -98,19 +174,33 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
     set({ isGenerating: true });
     try {
       const referenceImages = getReferencedImagePaths();
+      const imageMapping = getImageMapping();
 
-      // Task 3.2: Validate image paths
       const validImages: string[] = [];
-      for (const path of referenceImages) {
+      const validMapping: Record<string, string> = {};
+
+      for (const [name, path] of Object.entries(imageMapping)) {
         try {
-          const fileExists = await exists(path);
-          if (fileExists) {
-            validImages.push(path);
-          } else {
-            console.warn(`Warning: Image not found, skipping: ${path}`);
+          if (await exists(path)) {
+            validMapping[name] = path;
+            if (!validImages.includes(path)) {
+              validImages.push(path);
+            }
           }
-        } catch (e) {
-          console.warn(`Warning: Error checking image path, skipping: ${path}`, e);
+        } catch (err) {
+          console.warn(`Failed to validate image path: ${path}`, err);
+        }
+      }
+
+      for (const path of referenceImages) {
+        if (!validImages.includes(path)) {
+          try {
+            if (await exists(path)) {
+              validImages.push(path);
+            }
+          } catch (err) {
+            console.warn(`Failed to validate reference image path: ${path}`, err);
+          }
         }
       }
 
@@ -122,6 +212,7 @@ export const useGenerationStore = create<GenerationState>((set, get) => ({
           height,
           count,
           referenceImages: validImages.length > 0 ? validImages : null,
+          imageMapping: Object.keys(validMapping).length > 0 ? validMapping : null,
         },
       });
       set({ generatedImages: images, isGenerating: false });

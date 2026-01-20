@@ -5,4 +5,6 @@ export interface ReferenceImage {
   originalFileName: string; // Original filename (read-only)
   thumbnailDataUrl?: string; // Base64 data URL for preview
   addedAt: number; // Timestamp
+  source: 'studio' | 'resource'; // Where the image came from
+  resourceId?: string; // Optional resource ID if source is 'resource'
 }
